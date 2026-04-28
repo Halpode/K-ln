@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎸 Köln-Trip 08.–10.05.2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     /* ── Fonts ── */
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;600&display=swap');
@@ -321,6 +322,130 @@
 
     /* ── Divider ── */
     section { margin-bottom: 3rem; }
+
+    /* ── Map section ── */
+    #map-wrap {
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    #cologne-map {
+      height: 440px;
+      width: 100%;
+    }
+    #map-legend {
+      position: absolute;
+      top: .75rem;
+      right: .75rem;
+      z-index: 1000;
+      background: rgba(13,13,13,.88);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .6rem .85rem;
+      font-size: .75rem;
+      color: #b5a98a;
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+    }
+    #map-legend .leg-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .3rem;
+    }
+    #map-legend .leg-row:last-child { margin-bottom: 0; }
+    .leg-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    /* Override Leaflet popup for dark theme */
+    .leaflet-popup-content-wrapper {
+      background: #1a1814;
+      color: #fdfcf7;
+      border: 1px solid #2e2b26;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.55);
+    }
+    .leaflet-popup-tip { background: #1a1814; }
+    .leaflet-popup-content { margin: .6rem .85rem; font-size: .85rem; line-height: 1.45; }
+    .leaflet-popup-content strong { color: #c9a84c; display: block; margin-bottom: .15rem; }
+    .leaflet-popup-content small { color: #958c7a; }
+    .leaflet-popup-close-button { color: #958c7a !important; }
+
+    /* ── Clickable timeline items ── */
+    .tl-item {
+      cursor: pointer;
+      border-radius: 0 8px 8px 0;
+      transition: background .15s;
+    }
+    .tl-item:hover { background: rgba(201,168,76,.04); }
+    .tl-item:hover .tl-dot {
+      border-color: var(--red);
+      transform: scale(1.1);
+    }
+    .tl-item.active .tl-dot {
+      border-color: var(--red);
+      background: rgba(192,57,43,.15);
+    }
+    .tl-dot { transition: border-color .2s, transform .2s, background .2s; }
+
+    /* QR badge shown on each title */
+    .qr-badge {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 600;
+      background: rgba(201,168,76,.12);
+      border: 1px solid rgba(201,168,76,.3);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--gold);
+      margin-left: .5rem;
+      vertical-align: middle;
+      letter-spacing: .04em;
+    }
+
+    /* ── QR Reveal panel ── */
+    .qr-reveal {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+    }
+    .qr-reveal.open {
+      max-height: 220px;
+      opacity: 1;
+    }
+    .qr-reveal-inner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(201,168,76,.2);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      margin-top: .65rem;
+    }
+    .qr-img-wrap {
+      background: #fff;
+      padding: .35rem;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+    .qr-img-wrap img { width: 110px; height: 110px; display: block; }
+    .qr-meta { display: flex; flex-direction: column; gap: .35rem; }
+    .qr-meta p { font-size: .78rem; color: #9c9282; margin: 0; }
+    .qr-open-link {
+      display: inline-block;
+      font-size: .8rem;
+      color: var(--gold);
+      text-decoration: none;
+      border: 1px solid rgba(201,168,76,.35);
+      border-radius: 4px;
+      padding: .25rem .65rem;
+      transition: background .15s;
+    }
+    .qr-open-link:hover { background: rgba(201,168,76,.1); text-decoration: none; }
   </style>
 </head>
 <body>
@@ -338,6 +463,16 @@
     <span class="badge">☕ Spontane Erkundungen</span>
   </div>
 </header>
+
+<!-- ════════════════════════════ KÖLN MAP ════════════════════════════ -->
+<div id="map-wrap">
+  <div id="map-legend">
+    <div class="leg-row"><div class="leg-dot" style="background:#c0392b"></div> Tag 1 – Ankunft</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#c9a84c"></div> Tag 2 – Highlight</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#27ae60"></div> Tag 3 – Abreise</div>
+  </div>
+  <div id="cologne-map"></div>
+</div>
 
 <main>
 
@@ -357,32 +492,41 @@
         </div>
         <div class="day-card-body">
           <ul class="timeline">
-            <li>
-              <div class="tl-dot">🚂</div>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=K%C3%B6ln+Hauptbahnhof">
+              <div class="tl-dot">🚆</div>
               <div class="tl-content">
-                <strong>Ankunft in Köln</strong>
-                <p>Am Kölner Hauptbahnhof ankommen, Koffer schultern und erstmal den Dom bestaunen – er ist direkt vor der Tür.</p>
+                <strong>Anreise nach Köln</strong>
+                <p>Mit dem Zug oder Auto – Köln Hbf ist das Tor zur Stadt. Der Dom empfängt euch direkt vor der Tür.</p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.airbnb.de/s/K%C3%B6ln--Deutschland">
               <div class="tl-dot">🏠</div>
               <div class="tl-content">
                 <strong>Check-in Airbnb</strong>
-                <p>Einchecken, Sachen abstellen, kurz durchatmen und frisch machen.</p>
+                <p>Koffer fallen lassen, kurz durchatmen, Wohnung erkunden. Einchecken und frisch machen.</p>
               </div>
             </li>
-            <li>
-              <div class="tl-dot">🌆</div>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Secondhand+Shops+Belgisches+Viertel+K%C3%B6ln">
+              <div class="tl-dot">🛍️</div>
               <div class="tl-content">
-                <strong>Stadt entdecken</strong>
-                <p>Ein kleiner Spaziergang durch die Altstadt, am Rhein entlang – einfach ankommen.</p>
+                <strong>Nachmittag: Ankommen &amp; Einkaufen</strong>
+                <p>
+                  Einkaufsmöglichkeiten in der Nähe:<br>
+                  <strong style="color:#c9a84c">Belgisches Viertel</strong> – Boutiquen, Secondhand, kleine Läden (Maastrichter Str.)<br>
+                  <strong style="color:#c9a84c">Hohe Straße / Schildergasse</strong> – Fußgängerzone, Drogerie, Alltag (5 Min. vom Dom)<br>
+                  <strong style="color:#c9a84c">dm / REWE / Aldi</strong> – mehrere Filialen in der Innenstadt &amp; Neustadt
+                </p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=P%C3%A4ffgen+Friesenstra%C3%9Fe+K%C3%B6ln">
               <div class="tl-dot">🍻</div>
               <div class="tl-content">
-                <strong>Abends etwas trinken</strong>
-                <p>Kölsch in einer der klassischen Brauhäuser (z. B. Früh am Dom oder Gaffel am Dom) oder gemütlich in einer Bar in der Südstadt.</p>
+                <strong>Abends: Was trinken gehen</strong>
+                <p>
+                  <strong style="color:#c9a84c">Päffgen Friesenstraße</strong> – eine der ältesten und schönsten Kölsch-Kneipen der Stadt.<br>
+                  Friesenstraße 64–66, 50670 Köln &nbsp;·&nbsp; ab 11 Uhr<br>
+                  Kölsch direkt vom Fass, rustikales Flair, immer voll und trotzdem gemütlich. 🍺
+                </p>
               </div>
             </li>
           </ul>
@@ -400,14 +544,14 @@
         </div>
         <div class="day-card-body">
           <ul class="timeline">
-            <li>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Fr%C3%BChst%C3%BCck+Caf%C3%A9+K%C3%B6ln+Belgisches+Viertel">
               <div class="tl-dot">☕</div>
               <div class="tl-content">
                 <strong>Gemütliches Frühstück</strong>
                 <p>Entspannt in die Gänge kommen – Frühstück im Café oder in der Wohnung.</p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Vintage+Secondhand+Ehrenfeld+Venloer+Stra%C3%9Fe+K%C3%B6ln">
               <div class="tl-dot">👗</div>
               <div class="tl-content">
                 <strong>Secondhand-Shopping</strong>
@@ -419,7 +563,7 @@
                 </p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.instagram.com/trashxchic.koeln/">
               <div class="tl-dot">🍖</div>
               <div class="tl-content">
                 <strong>Abendessen bei trashxchic (ab 17 Uhr)</strong>
@@ -430,7 +574,7 @@
                 </p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.kantine.de">
               <div class="tl-dot">🎸</div>
               <div class="tl-content">
                 <strong>Pothead-Konzert – Kantine Köln</strong>
@@ -458,14 +602,14 @@
         </div>
         <div class="day-card-body">
           <ul class="timeline">
-            <li>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Fr%C3%BChst%C3%BCck+Caf%C3%A9+K%C3%B6ln+Neustadt">
               <div class="tl-dot">🌅</div>
               <div class="tl-content">
                 <strong>Ausschlafen &amp; Check-out</strong>
                 <p>Kein Stress – gemütlich aufwachen, Frühstück, Sachen packen.</p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Volksgarten+K%C3%B6ln">
               <div class="tl-dot">🚶</div>
               <div class="tl-content">
                 <strong>Spontan in der Nähe herumstreunen</strong>
@@ -475,7 +619,7 @@
                 </p>
               </div>
             </li>
-            <li>
+            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=K%C3%B6ln+Hauptbahnhof">
               <div class="tl-dot">🚂</div>
               <div class="tl-content">
                 <strong>Heimreise</strong>
@@ -627,6 +771,97 @@
 <footer>
   <p>Gemacht mit ❤️ für den besten Köln-Trip 2026 &nbsp;·&nbsp; 08.–10. Mai &nbsp;·&nbsp; 3 Personen, 1 Abenteuer</p>
 </footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+(function () {
+  'use strict';
 
+  /* ─── Leaflet Köln map ─── */
+  var map = L.map('cologne-map', {
+    center: [50.9340, 6.9495],
+    zoom: 13,
+    scrollWheelZoom: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#c9a84c">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" style="color:#c9a84c">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  function makeIcon(emoji, color) {
+    return L.divIcon({
+      html: '<div style="width:34px;height:34px;border-radius:50%;background:' + color + ';border:2px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,.55)">' + emoji + '</div>',
+      className: '',
+      iconSize: [34, 34],
+      iconAnchor: [17, 17],
+      popupAnchor: [0, -22]
+    });
+  }
+
+  var locs = [
+    { lat: 50.9431, lng: 6.9591, emoji: '🚆', label: 'Köln Hauptbahnhof',      sub: 'Anreise &amp; Heimreise',           day: 1 },
+    { lat: 50.9241, lng: 6.9578, emoji: '🏠', label: 'Airbnb (Platzhalter)',    sub: 'Euer Check-in · Tag 1',             day: 1 },
+    { lat: 50.9381, lng: 6.9388, emoji: '🛍️', label: 'Belgisches Viertel',     sub: 'Shopping · Tag 1 Nachmittag',       day: 1 },
+    { lat: 50.9441, lng: 6.9459, emoji: '🍺', label: 'Päffgen Friesenstraße',  sub: 'Abends trinken · Tag 1',            day: 1 },
+    { lat: 50.9512, lng: 6.9196, emoji: '👗', label: 'Ehrenfeld – Venloer Str.', sub: 'Secondhand-Shopping · Tag 2',     day: 2 },
+    { lat: 50.9249, lng: 6.9538, emoji: '🍖', label: 'trashxchic',              sub: 'Abendessen · Tag 2',                day: 2 },
+    { lat: 50.9389, lng: 6.9337, emoji: '🎸', label: 'Kantine Köln',            sub: 'Pothead-Konzert · Tag 2',          day: 2 },
+    { lat: 50.9212, lng: 6.9503, emoji: '🌳', label: 'Volksgarten',             sub: 'Herumstreunen · Tag 3',             day: 3 }
+  ];
+
+  var dayColors = { 1: '#c0392b', 2: '#c9a84c', 3: '#27ae60' };
+
+  locs.forEach(function (loc) {
+    var marker = L.marker([loc.lat, loc.lng], { icon: makeIcon(loc.emoji, dayColors[loc.day]) }).addTo(map);
+    marker.bindPopup('<strong>' + loc.emoji + ' ' + loc.label + '</strong><small>' + loc.sub + '</small>');
+  });
+
+  /* ─── Clickable checkpoints with QR reveal ─── */
+  document.querySelectorAll('.tl-item').forEach(function (item) {
+    var url = item.dataset.qr;
+    if (!url) return;
+
+    // Add "QR" badge to title
+    var strong = item.querySelector('.tl-content strong');
+    if (strong) {
+      var badge = document.createElement('span');
+      badge.className = 'qr-badge';
+      badge.textContent = '📷 QR';
+      strong.appendChild(badge);
+    }
+
+    // Build hidden QR reveal panel
+    var reveal = document.createElement('div');
+    reveal.className = 'qr-reveal';
+    var encoded = encodeURIComponent(url);
+    var safeHref = url.replace(/&/g, '&amp;');
+    var shortLabel = url.length > 48 ? url.slice(0, 48) + '…' : url;
+    reveal.innerHTML =
+      '<div class="qr-reveal-inner">' +
+        '<div class="qr-img-wrap">' +
+          '<img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&amp;data=' + encoded + '" alt="QR Code" loading="lazy" />' +
+        '</div>' +
+        '<div class="qr-meta">' +
+          '<p>📱 Scannen oder direkt öffnen:</p>' +
+          '<a class="qr-open-link" href="' + safeHref + '" target="_blank" rel="noopener">' + shortLabel + '</a>' +
+        '</div>' +
+      '</div>';
+    item.querySelector('.tl-content').appendChild(reveal);
+
+    item.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return; // let links inside work normally
+      var isOpen = reveal.classList.contains('open');
+      // Close all open panels
+      document.querySelectorAll('.qr-reveal.open').forEach(function (r) { r.classList.remove('open'); });
+      document.querySelectorAll('.tl-item.active').forEach(function (i) { i.classList.remove('active'); });
+      if (!isOpen) {
+        reveal.classList.add('open');
+        item.classList.add('active');
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>
