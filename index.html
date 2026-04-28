@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Köln 08.–10.05.2026</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;500&display=swap');
 
@@ -25,19 +24,10 @@
       z-index: 0;
     }
 
-    /* ── Leaflet dark overrides ── */
-    .leaflet-control-attribution {
-      background: rgba(0,0,0,.65) !important;
-      color: #555 !important;
-      font-size: .65rem !important;
-    }
-    .leaflet-control-attribution a { color: #666 !important; }
-    .leaflet-control-zoom a {
-      background: #111 !important;
-      color: #fff !important;
-      border-color: #333 !important;
-    }
-    .leaflet-control-zoom a:hover { background: #222 !important; }
+
+    /* ── Google Maps zoom control styling ── */
+    .gm-control-active img { filter: invert(1) !important; }
+    .gmnoprint .gm-style-cc { display: none !important; }
 
     /* ── Square punk map pins ── */
     .map-pin {
@@ -540,27 +530,57 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<!-- ⚠️ Ersetze YOUR_API_KEY mit deinem Google Maps API-Key aus der Google Cloud Console -->
+<script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&loading=async&callback=initMap"></script>
 <script>
-(function () {
+window.initMap = function () {
   'use strict';
 
   /* Airbnb coords – used as transit origin for all other locations */
   var ABB_LAT = 50.9250, ABB_LNG = 6.9530;
 
-  /* ── Map ── */
-  var map = L.map('map', {
-    center: [50.9340, 6.9495],
-    zoom: 13,
-    zoomControl: true,
-    scrollWheelZoom: true
-  });
+  /* ── Retro map style (from Static Maps URL) ── */
+  var MAP_STYLES = [
+    { elementType: 'geometry', stylers: [{ color: '#ebe3cd' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#523735' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f1e6' }] },
+    { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#c9b2a6' }] },
+    { featureType: 'administrative.land_parcel', elementType: 'geometry.stroke', stylers: [{ color: '#dcd2be' }] },
+    { featureType: 'administrative.land_parcel', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+    { featureType: 'administrative.land_parcel', elementType: 'labels.text.fill', stylers: [{ color: '#ae9e90' }] },
+    { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'poi', elementType: 'labels.text', stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#93817c' }] },
+    { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi.park', elementType: 'geometry.fill', stylers: [{ color: '#a5b076' }] },
+    { featureType: 'poi.park', elementType: 'labels.text', stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#447530' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f1e6' }] },
+    { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#fdfcf8' }] },
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#f8c967' }] },
+    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#e9bc62' }] },
+    { featureType: 'road.highway.controlled_access', elementType: 'geometry', stylers: [{ color: '#e98d58' }] },
+    { featureType: 'road.highway.controlled_access', elementType: 'geometry.stroke', stylers: [{ color: '#db8555' }] },
+    { featureType: 'road.local', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+    { featureType: 'road.local', elementType: 'labels.text.fill', stylers: [{ color: '#806b63' }] },
+    { featureType: 'transit.line', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'transit.line', elementType: 'labels.text.fill', stylers: [{ color: '#8f7d77' }] },
+    { featureType: 'transit.line', elementType: 'labels.text.stroke', stylers: [{ color: '#ebe3cd' }] },
+    { featureType: 'transit.station', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'water', elementType: 'geometry.fill', stylers: [{ color: '#b9d3c2' }] },
+    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#92998d' }] }
+  ];
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map);
+  /* ── Map ── */
+  var map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 50.9340, lng: 6.9495 },
+    zoom: 13,
+    styles: MAP_STYLES,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false
+  });
 
   /* ── Location data ── */
   var locations = [
@@ -733,24 +753,51 @@
     return Object.assign({}, base, overrides[i]);
   }
 
+  /* ── Custom HTML-Marker via OverlayView (kompatibel mit map styles) ── */
+  function PinOverlay(opts) {
+    this._lat   = opts.lat;
+    this._lng   = opts.lng;
+    this._emoji = opts.emoji;
+    this._name  = opts.name;
+    this._click = opts.onClick;
+    this.setMap(opts.map);
+  }
+  PinOverlay.prototype = Object.create(google.maps.OverlayView.prototype);
+  PinOverlay.prototype.onAdd = function () {
+    var wrapper = document.createElement('div');
+    wrapper.style.position = 'absolute';
+    var pin = document.createElement('div');
+    pin.className  = 'map-pin';
+    pin.textContent = this._emoji;
+    pin.title       = this._name;
+    wrapper.appendChild(pin);
+    this._wrapper = wrapper;
+    this._pin     = pin;
+    var self = this;
+    wrapper.addEventListener('click', function () { self._click(); });
+    this.getPanes().overlayMouseTarget.appendChild(wrapper);
+  };
+  PinOverlay.prototype.draw = function () {
+    var p = this.getProjection().fromLatLngToDivPixel(
+      new google.maps.LatLng(this._lat, this._lng)
+    );
+    this._wrapper.style.left = (p.x - 20) + 'px';
+    this._wrapper.style.top  = (p.y - 20) + 'px';
+  };
+  PinOverlay.prototype.onRemove = function () {
+    if (this._wrapper) { this._wrapper.parentNode.removeChild(this._wrapper); this._wrapper = null; }
+  };
+
   /* ── Build markers ── */
   var activeMarkerEl = null;
 
   locations.forEach(function (loc, i) {
-    var iconEl = document.createElement('div');
-    iconEl.className = 'map-pin';
-    iconEl.textContent = loc.emoji;
-    iconEl.title = loc.name;
-
-    var icon = L.divIcon({
-      html: iconEl.outerHTML,
-      className: '',
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
+    var pinObj = new PinOverlay({
+      lat: loc.lat, lng: loc.lng,
+      emoji: loc.emoji, name: loc.name,
+      map: map,
+      onClick: function () { openModal(getEffectiveLoc(i), pinObj._pin, i); }
     });
-
-    var marker = L.marker([loc.lat, loc.lng], { icon: icon }).addTo(map);
-    marker.on('click', function () { openModal(getEffectiveLoc(i), marker.getElement(), i); });
   });
 
   /* ── Modal elements ── */
@@ -782,9 +829,9 @@
   function openModal(loc, markerEl, locIdx) {
     currentLocIdx = (locIdx !== undefined) ? locIdx : -1;
     /* Deactivate previous pin */
-    if (activeMarkerEl) activeMarkerEl.querySelector('.map-pin').classList.remove('active');
+    if (activeMarkerEl) activeMarkerEl.classList.remove('active');
     activeMarkerEl = markerEl;
-    if (markerEl) markerEl.querySelector('.map-pin').classList.add('active');
+    if (markerEl) markerEl.classList.add('active');
 
     /* Reset QR state */
     qrPanel.classList.remove('open');
@@ -847,7 +894,7 @@
 
   function closeModal() {
     overlay.classList.remove('open');
-    if (activeMarkerEl) activeMarkerEl.querySelector('.map-pin').classList.remove('active');
+    if (activeMarkerEl) activeMarkerEl.classList.remove('active');
     activeMarkerEl = null;
     editPanelEl.classList.remove('open');
     btnEditEl.classList.remove('active');
@@ -970,7 +1017,7 @@
     window.location.reload();
   });
 
-})();
+};
 </script>
 </body>
 </html>
