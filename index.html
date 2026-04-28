@@ -3,863 +3,321 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎸 Köln-Trip 08.–10.05.2026</title>
+  <title>Köln 08.–10.05.2026</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
-    /* ── Fonts ── */
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;500&display=swap');
 
-    /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --black:   #0d0d0d;
-      --white:   #fdfcf7;
-      --cream:   #f4f0e6;
-      --red:     #c0392b;
-      --gold:    #c9a84c;
-      --muted:   #5c5446;
-      --card-bg: #1a1814;
-      --border:  #2e2b26;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--black);
-      color: var(--white);
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    /* ── Hero ── */
-    .hero {
-      position: relative;
-      overflow: hidden;
-      text-align: center;
-      padding: 5rem 1.5rem 4rem;
-      background: linear-gradient(160deg, #0d0d0d 0%, #1b0a0a 50%, #0d0d0d 100%);
-      border-bottom: 1px solid var(--border);
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(192,57,43,.22) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-eyebrow {
-      display: inline-block;
-      font-size: .75rem;
-      font-weight: 600;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1.2rem;
-    }
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.4rem, 8vw, 5rem);
-      line-height: 1.15;
-      margin-bottom: .5rem;
-    }
-    .hero h1 em { font-style: italic; color: var(--red); }
-    .hero-subtitle {
-      font-size: clamp(1rem, 3vw, 1.25rem);
-      color: #b5a98a;
-      margin-top: .75rem;
-      margin-bottom: 2rem;
-    }
-    .badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .6rem;
-      justify-content: center;
-    }
-    .badge {
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--border);
-      border-radius: 2rem;
-      padding: .35rem .9rem;
-      font-size: .8rem;
-      color: #c9bfa8;
-    }
-
-    /* ── Layout ── */
-    main {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 3rem 1.25rem 4rem;
-    }
-
-    /* ── Section headings ── */
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      color: var(--gold);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-    }
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ── Day cards ── */
-    .days { display: flex; flex-direction: column; gap: 1.5rem; }
-
-    .day-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .day-card-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,.02);
-    }
-    .day-number {
-      width: 2.4rem;
-      height: 2.4rem;
-      border-radius: 50%;
-      background: var(--red);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: .9rem;
-      flex-shrink: 0;
-    }
-    .day-info h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-    }
-    .day-info span {
-      font-size: .8rem;
-      color: var(--muted);
-    }
-    .day-card-body { padding: 1.25rem; }
-
-    .timeline { list-style: none; }
-    .timeline li {
-      display: flex;
-      gap: .9rem;
-      padding-bottom: 1.1rem;
-      position: relative;
-    }
-    .timeline li:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      left: 1rem;
-      top: 1.6rem;
-      bottom: 0;
-      width: 1px;
-      background: var(--border);
-    }
-    .tl-dot {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      background: var(--card-bg);
-      border: 2px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .9rem;
-      flex-shrink: 0;
-      margin-top: .15rem;
-    }
-    .tl-content strong {
-      display: block;
-      font-size: .95rem;
-      color: var(--white);
-    }
-    .tl-content p {
-      font-size: .85rem;
-      color: #958c7a;
-      margin-top: .2rem;
-    }
-    .tl-content a {
-      color: var(--gold);
-      text-decoration: none;
-    }
-    .tl-content a:hover { text-decoration: underline; }
-
-    .highlight-banner {
-      margin-top: .8rem;
-      background: rgba(192,57,43,.12);
-      border: 1px solid rgba(192,57,43,.35);
-      border-radius: 8px;
-      padding: .75rem 1rem;
-      font-size: .85rem;
-      color: #e8a89c;
-      display: flex;
-      gap: .5rem;
-      align-items: flex-start;
-    }
-
-    /* ── ÖPNV section ── */
-    .transport-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-    .transport-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem 1.1rem;
-    }
-    .transport-card h4 {
-      font-size: .9rem;
-      color: var(--gold);
-      margin-bottom: .5rem;
-    }
-    .transport-card p { font-size: .83rem; color: #9c9282; line-height: 1.5; }
-    .transport-card a { color: var(--gold); text-decoration: none; }
-    .transport-card a:hover { text-decoration: underline; }
-
-    .route-block {
-      margin-top: 1rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.1rem 1.25rem;
-    }
-    .route-block h4 { font-size: .9rem; color: var(--white); margin-bottom: .6rem; }
-    .route-steps { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
-    .route-steps li {
-      display: flex;
-      align-items: center;
-      gap: .7rem;
-      font-size: .83rem;
-      color: #9c9282;
-    }
-    .kvb-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 2rem;
-      height: 1.35rem;
-      border-radius: .25rem;
-      font-size: .72rem;
-      font-weight: 700;
-      padding: 0 .4rem;
-      flex-shrink: 0;
-    }
-    .kvb-1  { background: #e2001a; color: #fff; }
-    .kvb-7  { background: #f39200; color: #fff; }
-    .kvb-12 { background: #0069b4; color: #fff; }
-
-    /* ── Links section ── */
-    .links-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .link-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem 1.1rem;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color .2s, background .2s;
-      display: block;
-    }
-    .link-card:hover {
-      border-color: var(--gold);
-      background: rgba(201,168,76,.05);
-    }
-    .link-card .icon { font-size: 1.5rem; margin-bottom: .4rem; display: block; }
-    .link-card strong { display: block; font-size: .9rem; color: var(--white); }
-    .link-card span { font-size: .78rem; color: var(--muted); }
-
-    /* ── QR section ── */
-    .qr-section {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      align-items: center;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.75rem;
-    }
-    .qr-image-wrap {
-      background: #fff;
-      padding: .6rem;
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-    .qr-image-wrap img { display: block; width: 160px; height: 160px; }
-    .qr-text h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      margin-bottom: .5rem;
-    }
-    .qr-text p { font-size: .85rem; color: #9c9282; }
-    .qr-text a { color: var(--gold); word-break: break-all; }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      border-top: 1px solid var(--border);
-      font-size: .78rem;
-      color: var(--muted);
-    }
-
-    /* ── Divider ── */
-    section { margin-bottom: 3rem; }
-
-    /* ── Map section ── */
-    #map-wrap {
-      position: relative;
-      border-bottom: 1px solid var(--border);
-    }
-    #cologne-map {
-      height: 440px;
+    html, body {
+      height: 100%;
       width: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Inter', sans-serif;
     }
-    #map-legend {
-      position: absolute;
-      top: .75rem;
-      right: .75rem;
-      z-index: 1000;
-      background: rgba(13,13,13,.88);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: .6rem .85rem;
-      font-size: .75rem;
-      color: #b5a98a;
-      backdrop-filter: blur(6px);
-      pointer-events: none;
+
+    /* ── Full-screen map ── */
+    #map {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
     }
-    #map-legend .leg-row {
+
+    /* ── Leaflet attribution dark ── */
+    .leaflet-control-attribution {
+      background: rgba(0,0,0,.65) !important;
+      color: #555 !important;
+      font-size: .65rem !important;
+    }
+    .leaflet-control-attribution a { color: #666 !important; }
+    .leaflet-control-zoom a {
+      background: #111 !important;
+      color: #fff !important;
+      border-color: #333 !important;
+    }
+    .leaflet-control-zoom a:hover { background: #222 !important; }
+
+    /* ── Custom pin ── */
+    .map-pin {
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: .5rem;
-      margin-bottom: .3rem;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #0a0a0a;
+      border: 2px solid #fff;
+      border-radius: 0;
+      font-size: 1.2rem;
+      box-shadow: 0 0 0 1px #000, 4px 4px 0 rgba(255,255,255,.08);
+      transition: border-color .15s, transform .15s;
+      line-height: 1;
     }
-    #map-legend .leg-row:last-child { margin-bottom: 0; }
-    .leg-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    /* Override Leaflet popup for dark theme */
-    .leaflet-popup-content-wrapper {
-      background: #1a1814;
-      color: #fdfcf7;
-      border: 1px solid #2e2b26;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.55);
-    }
-    .leaflet-popup-tip { background: #1a1814; }
-    .leaflet-popup-content { margin: .6rem .85rem; font-size: .85rem; line-height: 1.45; }
-    .leaflet-popup-content strong { color: #c9a84c; display: block; margin-bottom: .15rem; }
-    .leaflet-popup-content small { color: #958c7a; }
-    .leaflet-popup-close-button { color: #958c7a !important; }
-
-    /* ── Clickable timeline items ── */
-    .tl-item {
-      cursor: pointer;
-      border-radius: 0 8px 8px 0;
-      transition: background .15s;
-    }
-    .tl-item:hover { background: rgba(201,168,76,.04); }
-    .tl-item:hover .tl-dot {
-      border-color: var(--red);
+    .map-pin:hover {
+      border-color: #e00;
       transform: scale(1.1);
     }
-    .tl-item.active .tl-dot {
-      border-color: var(--red);
-      background: rgba(192,57,43,.15);
-    }
-    .tl-dot { transition: border-color .2s, transform .2s, background .2s; }
-
-    /* QR badge shown on each title */
-    .qr-badge {
-      display: inline-block;
-      font-size: .6rem;
-      font-weight: 600;
-      background: rgba(201,168,76,.12);
-      border: 1px solid rgba(201,168,76,.3);
-      border-radius: 3px;
-      padding: 1px 5px;
-      color: var(--gold);
-      margin-left: .5rem;
-      vertical-align: middle;
-      letter-spacing: .04em;
+    .map-pin.active {
+      border-color: #e00;
+      background: #1a0000;
     }
 
-    /* ── QR Reveal panel ── */
-    .qr-reveal {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s ease;
-    }
-    .qr-reveal.open {
-      max-height: 220px;
-      opacity: 1;
-    }
-    .qr-reveal-inner {
+    /* ── Modal overlay ── */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      background: rgba(0,0,0,.7);
       display: flex;
       align-items: center;
-      gap: 1rem;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(201,168,76,.2);
-      border-radius: 8px;
-      padding: .75rem 1rem;
-      margin-top: .65rem;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
     }
-    .qr-img-wrap {
+    #modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── Modal card – Pothead punk style ── */
+    #modal-card {
+      background: #0a0a0a;
+      border: 2px solid #fff;
+      border-radius: 0;
+      box-shadow: 8px 8px 0 rgba(220,0,0,.35), 0 0 0 1px #000;
+      max-width: 340px;
+      width: 100%;
+      padding: 0;
+      transform: translateY(12px) scale(.97);
+      transition: transform .22s cubic-bezier(.34,1.2,.64,1);
+      position: relative;
+      overflow: hidden;
+    }
+    #modal-overlay.open #modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    /* red stripe at top */
+    #modal-card::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: #e00;
+    }
+
+    #modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: 1px solid #333;
+      color: #666;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: border-color .15s, color .15s;
+    }
+    #modal-close:hover { border-color: #e00; color: #fff; }
+
+    #modal-body {
+      padding: 1.5rem 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.1rem;
+    }
+
+    #modal-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #fff;
+      text-align: center;
+      line-height: 1.2;
+    }
+    #modal-label .pin-emoji {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: .35rem;
+    }
+
+    #modal-qr {
       background: #fff;
-      padding: .35rem;
-      border-radius: 5px;
-      flex-shrink: 0;
+      padding: .6rem;
+      border: 2px solid #fff;
+      box-shadow: 4px 4px 0 rgba(220,0,0,.2);
     }
-    .qr-img-wrap img { width: 110px; height: 110px; display: block; }
-    .qr-meta { display: flex; flex-direction: column; gap: .35rem; }
-    .qr-meta p { font-size: .78rem; color: #9c9282; margin: 0; }
-    .qr-open-link {
-      display: inline-block;
-      font-size: .8rem;
-      color: var(--gold);
-      text-decoration: none;
-      border: 1px solid rgba(201,168,76,.35);
-      border-radius: 4px;
-      padding: .25rem .65rem;
-      transition: background .15s;
+    #modal-qr img {
+      display: block;
+      width: 180px;
+      height: 180px;
     }
-    .qr-open-link:hover { background: rgba(201,168,76,.1); text-decoration: none; }
+
+    #modal-hint {
+      font-size: .72rem;
+      color: #444;
+      text-align: center;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════ HERO ════════════════════════════════ -->
-<header class="hero">
-  <span class="hero-eyebrow">🎁 Ein Geschenk für dich</span>
-  <h1>Wir fahren nach<br><em>Köln</em></h1>
-  <p class="hero-subtitle">08. – 10. Mai 2026 &nbsp;·&nbsp; 2 Nächte &nbsp;·&nbsp; 3 Personen</p>
-  <div class="badge-row">
-    <span class="badge">🏠 Airbnb</span>
-    <span class="badge">🛍️ Secondhand-Shopping</span>
-    <span class="badge">🍖 trashxchic</span>
-    <span class="badge">🎸 Pothead-Konzert</span>
-    <span class="badge">☕ Spontane Erkundungen</span>
-  </div>
-</header>
+<!-- Full-screen map -->
+<div id="map"></div>
 
-<!-- ════════════════════════════ KÖLN MAP ════════════════════════════ -->
-<div id="map-wrap">
-  <div id="map-legend">
-    <div class="leg-row"><div class="leg-dot" style="background:#c0392b"></div> Tag 1 – Ankunft</div>
-    <div class="leg-row"><div class="leg-dot" style="background:#c9a84c"></div> Tag 2 – Highlight</div>
-    <div class="leg-row"><div class="leg-dot" style="background:#27ae60"></div> Tag 3 – Abreise</div>
+<!-- QR Modal -->
+<div id="modal-overlay">
+  <div id="modal-card">
+    <button id="modal-close" aria-label="Schließen">✕</button>
+    <div id="modal-body">
+      <div id="modal-label"><span id="modal-emoji" class="pin-emoji"></span><span id="modal-name"></span></div>
+      <div id="modal-qr"><img id="modal-qr-img" src="" alt="QR Code" width="180" height="180" /></div>
+      <div id="modal-hint">Scannen zum Öffnen</div>
+    </div>
   </div>
-  <div id="cologne-map"></div>
 </div>
 
-<main>
-
-  <!-- ════ 3-TAGE-PLAN ════ -->
-  <section>
-    <h2 class="section-title">🗓️ 3-Tage-Plan</h2>
-    <div class="days">
-
-      <!-- TAG 1 -->
-      <div class="day-card">
-        <div class="day-card-header">
-          <div class="day-number">1</div>
-          <div class="day-info">
-            <h3>Freitag, 08. Mai – Ankunft &amp; Einstimmen</h3>
-            <span>Check-in · Entspannen · Abends etwas trinken</span>
-          </div>
-        </div>
-        <div class="day-card-body">
-          <ul class="timeline">
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=K%C3%B6ln+Hauptbahnhof">
-              <div class="tl-dot">🚆</div>
-              <div class="tl-content">
-                <strong>Anreise nach Köln</strong>
-                <p>Mit dem Zug oder Auto – Köln Hbf ist das Tor zur Stadt. Der Dom empfängt euch direkt vor der Tür.</p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.airbnb.de/s/K%C3%B6ln--Deutschland">
-              <div class="tl-dot">🏠</div>
-              <div class="tl-content">
-                <strong>Check-in Airbnb</strong>
-                <p>Koffer fallen lassen, kurz durchatmen, Wohnung erkunden. Einchecken und frisch machen.</p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Secondhand+Shops+Belgisches+Viertel+K%C3%B6ln">
-              <div class="tl-dot">🛍️</div>
-              <div class="tl-content">
-                <strong>Nachmittag: Ankommen &amp; Einkaufen</strong>
-                <p>
-                  Einkaufsmöglichkeiten in der Nähe:<br>
-                  <strong style="color:#c9a84c">Belgisches Viertel</strong> – Boutiquen, Secondhand, kleine Läden (Maastrichter Str.)<br>
-                  <strong style="color:#c9a84c">Hohe Straße / Schildergasse</strong> – Fußgängerzone, Drogerie, Alltag (5 Min. vom Dom)<br>
-                  <strong style="color:#c9a84c">dm / REWE / Aldi</strong> – mehrere Filialen in der Innenstadt &amp; Neustadt
-                </p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=P%C3%A4ffgen+Friesenstra%C3%9Fe+K%C3%B6ln">
-              <div class="tl-dot">🍻</div>
-              <div class="tl-content">
-                <strong>Abends: Was trinken gehen</strong>
-                <p>
-                  <strong style="color:#c9a84c">Päffgen Friesenstraße</strong> – eine der ältesten und schönsten Kölsch-Kneipen der Stadt.<br>
-                  Friesenstraße 64–66, 50670 Köln &nbsp;·&nbsp; ab 11 Uhr<br>
-                  Kölsch direkt vom Fass, rustikales Flair, immer voll und trotzdem gemütlich. 🍺
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- TAG 2 -->
-      <div class="day-card">
-        <div class="day-card-header">
-          <div class="day-number">2</div>
-          <div class="day-info">
-            <h3>Samstag, 09. Mai – Das große Highlight 🎸</h3>
-            <span>Shopping · Essen · Pothead-Konzert</span>
-          </div>
-        </div>
-        <div class="day-card-body">
-          <ul class="timeline">
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Fr%C3%BChst%C3%BCck+Caf%C3%A9+K%C3%B6ln+Belgisches+Viertel">
-              <div class="tl-dot">☕</div>
-              <div class="tl-content">
-                <strong>Gemütliches Frühstück</strong>
-                <p>Entspannt in die Gänge kommen – Frühstück im Café oder in der Wohnung.</p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Vintage+Secondhand+Ehrenfeld+Venloer+Stra%C3%9Fe+K%C3%B6ln">
-              <div class="tl-dot">👗</div>
-              <div class="tl-content">
-                <strong>Secondhand-Shopping</strong>
-                <p>
-                  Köln ist ein Paradies für Vintage-Fans! Top-Reviere:<br>
-                  <strong style="color:#c9a84c">Ehrenfeld</strong> – Venloer Straße &amp; Nebenstraßen (viele unabhängige Läden)<br>
-                  <strong style="color:#c9a84c">Nippes</strong> – Neusser Straße, entspannte Atmosphäre<br>
-                  <strong style="color:#c9a84c">Belgisches Viertel</strong> – Boutiquen &amp; Vintage-Stores rund um die Maastrichter Str.
-                </p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.instagram.com/trashxchic.koeln/">
-              <div class="tl-dot">🍖</div>
-              <div class="tl-content">
-                <strong>Abendessen bei trashxchic (ab 17 Uhr)</strong>
-                <p>
-                  Gyros &amp; gutes Essen in entspannter Atmosphäre.<br>
-                  <a href="https://www.instagram.com/trashxchic.koeln/" target="_blank" rel="noopener">→ trashxchic auf Instagram</a><br>
-                  Öffnungszeiten: 17:00 – 22:00 Uhr
-                </p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.kantine.de">
-              <div class="tl-dot">🎸</div>
-              <div class="tl-content">
-                <strong>Pothead-Konzert – Kantine Köln</strong>
-                <p>
-                  <a href="https://www.kantine.de" target="_blank" rel="noopener">Kantine Köln</a> · Aachener Str. 2, 50674 Köln<br>
-                  Das Highlight des Trips! Einlass checken und früh genug da sein.
-                </p>
-                <div class="highlight-banner">
-                  🎶 <span><strong>Pothead live auf der Bühne!</strong> Eines der besten Ska-/Punkrock-Konzerte des Jahres. Tickets nicht vergessen!</span>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- TAG 3 -->
-      <div class="day-card">
-        <div class="day-card-header">
-          <div class="day-number">3</div>
-          <div class="day-info">
-            <h3>Sonntag, 10. Mai – Abreise</h3>
-            <span>Letzte Eindrücke · Herumstreunen · Heimreise</span>
-          </div>
-        </div>
-        <div class="day-card-body">
-          <ul class="timeline">
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Fr%C3%BChst%C3%BCck+Caf%C3%A9+K%C3%B6ln+Neustadt">
-              <div class="tl-dot">🌅</div>
-              <div class="tl-content">
-                <strong>Ausschlafen &amp; Check-out</strong>
-                <p>Kein Stress – gemütlich aufwachen, Frühstück, Sachen packen.</p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=Volksgarten+K%C3%B6ln">
-              <div class="tl-dot">🚶</div>
-              <div class="tl-content">
-                <strong>Spontan in der Nähe herumstreunen</strong>
-                <p>
-                  Was immer sich ergibt: noch ein Café, ein Markt, ein Park.<br>
-                  Tipps: Volksgarten, Agnesviertel, Frühstück im Café Sehnsucht oder Café Hallmackenreuther.
-                </p>
-              </div>
-            </li>
-            <li class="tl-item" data-qr="https://www.google.com/maps/search/?api=1&amp;query=K%C3%B6ln+Hauptbahnhof">
-              <div class="tl-dot">🚂</div>
-              <div class="tl-content">
-                <strong>Heimreise</strong>
-                <p>Mit vollen Taschen und einem noch volleren Herzen Richtung Heimat.</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-    </div><!-- /days -->
-  </section>
-
-  <!-- ════ ÖPNV ════ -->
-  <section>
-    <h2 class="section-title">🚌 ÖPNV – So kommt ihr zur Kantine</h2>
-
-    <div class="transport-grid">
-      <div class="transport-card">
-        <h4>📍 Kantine Köln</h4>
-        <p>
-          Aachener Str. 2<br>
-          50674 Köln<br>
-          (Nähe Rudolfplatz)
-        </p>
-      </div>
-      <div class="transport-card">
-        <h4>🗺️ KVB Fahrplanauskunft</h4>
-        <p>
-          <a href="https://www.kvb.koeln/fahrtplanung/" target="_blank" rel="noopener">kvb.koeln/fahrtplanung</a><br>
-          Live-Abfahrten, Verbindungen &amp; Tickets direkt beim KVB.
-        </p>
-      </div>
-      <div class="transport-card">
-        <h4>📱 KVB App</h4>
-        <p>
-          Die offizielle KVB-App für Android &amp; iOS – Tickets kaufen, Verbindungen suchen, Echtzeitinfo.<br>
-          Suchbegriff: <em>"KVB Köln"</em>
-        </p>
-      </div>
-      <div class="transport-card">
-        <h4>🔍 Google Maps</h4>
-        <p>
-          <a href="https://maps.app.goo.gl/Kantine-Koeln" target="_blank" rel="noopener">Kantine Köln auf Maps</a> oder einfach<br>
-          <em>"Kantine Köln, Aachener Str. 2"</em> eingeben.
-        </p>
-      </div>
-    </div>
-
-    <div class="route-block">
-      <h4>🚋 Route: Köln Hbf → Kantine (ca. 8 Min.)</h4>
-      <ul class="route-steps">
-        <li>
-          <span class="kvb-pill kvb-1">1</span>
-          <span>Straßenbahn Linie <strong>1</strong> Richtung <em>Junkersdorf</em> oder <em>Weiden West</em></span>
-        </li>
-        <li>
-          <span style="width:2rem;flex-shrink:0;text-align:center">→</span>
-          <span>Aussteigen an Haltestelle <strong>Rudolfplatz</strong></span>
-        </li>
-        <li>
-          <span style="width:2rem;flex-shrink:0;text-align:center">🚶</span>
-          <span>Ca. <strong>2 Minuten</strong> zu Fuß die Aachener Str. entlang bis Nr. 2</span>
-        </li>
-      </ul>
-    </div>
-
-    <div class="route-block" style="margin-top:.75rem">
-      <h4>🚋 Alternative: Linie 7 oder 12</h4>
-      <ul class="route-steps">
-        <li>
-          <span class="kvb-pill kvb-7">7</span>
-          <span>Linie <strong>7</strong> Richtung <em>Frechen Benzelrath</em> → Haltestelle <strong>Moltkestraße</strong></span>
-        </li>
-        <li>
-          <span class="kvb-pill kvb-12">12</span>
-          <span>Linie <strong>12</strong> Richtung <em>Dürener Str./Gürtel</em> → Haltestelle <strong>Moltkestraße</strong></span>
-        </li>
-        <li>
-          <span style="width:2rem;flex-shrink:0;text-align:center">🚶</span>
-          <span>Ca. <strong>5 Minuten</strong> zu Fuß Richtung Rudolfplatz / Aachener Str.</span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ════ ALLE LINKS ════ -->
-  <section>
-    <h2 class="section-title">🔗 Alle wichtigen Links</h2>
-    <div class="links-grid">
-      <a class="link-card" href="https://www.kantine.de" target="_blank" rel="noopener">
-        <span class="icon">🎵</span>
-        <strong>Kantine Köln</strong>
-        <span>Veranstaltungsort · kantine.de</span>
-      </a>
-      <a class="link-card" href="https://www.pothead.at" target="_blank" rel="noopener">
-        <span class="icon">🎸</span>
-        <strong>Pothead</strong>
-        <span>Offizielle Band-Website</span>
-      </a>
-      <a class="link-card" href="https://www.instagram.com/trashxchic.koeln/" target="_blank" rel="noopener">
-        <span class="icon">🍖</span>
-        <strong>trashxchic</strong>
-        <span>Gyros &amp; Essen · 17–22 Uhr</span>
-      </a>
-      <a class="link-card" href="https://www.kvb.koeln/fahrtplanung/" target="_blank" rel="noopener">
-        <span class="icon">🚋</span>
-        <strong>KVB Fahrplanauskunft</strong>
-        <span>Kölner Verkehrs-Betriebe</span>
-      </a>
-      <a class="link-card" href="https://www.airbnb.de/s/K%C3%B6ln--Deutschland" target="_blank" rel="noopener">
-        <span class="icon">🏠</span>
-        <strong>Airbnb Köln</strong>
-        <span>Unterkünfte in Köln</span>
-      </a>
-      <a class="link-card" href="https://www.koeln-tourismus.de" target="_blank" rel="noopener">
-        <span class="icon">🗺️</span>
-        <strong>Köln Tourismus</strong>
-        <span>Tipps &amp; Sehenswürdigkeiten</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- ════ QR-CODE ════ -->
-  <section>
-    <h2 class="section-title">📱 QR-Code</h2>
-    <div class="qr-section">
-      <div class="qr-image-wrap">
-        <img
-          src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fhalpode.github.io%2FK-ln%2F&color=0d0d0d&bgcolor=ffffff&margin=4"
-          alt="QR-Code für diese Seite"
-          width="160"
-          height="160"
-        />
-      </div>
-      <div class="qr-text">
-        <h3>Diese Seite immer dabei</h3>
-        <p>
-          Scanne diesen QR-Code, um den Reiseplan jederzeit auf deinem Handy aufzurufen – kein Drucken nötig.<br><br>
-          Direkt-Link:<br>
-          <a href="https://halpode.github.io/K-ln/" target="_blank" rel="noopener">https://halpode.github.io/K-ln/</a>
-        </p>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <p>Gemacht mit ❤️ für den besten Köln-Trip 2026 &nbsp;·&nbsp; 08.–10. Mai &nbsp;·&nbsp; 3 Personen, 1 Abenteuer</p>
-</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 (function () {
   'use strict';
 
-  /* ─── Leaflet Köln map ─── */
-  var map = L.map('cologne-map', {
+  /* ── Map ── */
+  var map = L.map('map', {
     center: [50.9340, 6.9495],
     zoom: 13,
-    scrollWheelZoom: false
+    zoomControl: true,
+    scrollWheelZoom: true
   });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#c9a84c">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" style="color:#c9a84c">CARTO</a>',
+    attribution: '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 19
   }).addTo(map);
 
-  function makeIcon(emoji, color) {
-    return L.divIcon({
-      html: '<div style="width:34px;height:34px;border-radius:50%;background:' + color + ';border:2px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,.55)">' + emoji + '</div>',
-      className: '',
-      iconSize: [34, 34],
-      iconAnchor: [17, 17],
-      popupAnchor: [0, -22]
-    });
-  }
-
-  var locs = [
-    { lat: 50.9431, lng: 6.9591, emoji: '🚆', label: 'Köln Hauptbahnhof',      sub: 'Anreise &amp; Heimreise',           day: 1 },
-    { lat: 50.9241, lng: 6.9578, emoji: '🏠', label: 'Airbnb (Platzhalter)',    sub: 'Euer Check-in · Tag 1',             day: 1 },
-    { lat: 50.9381, lng: 6.9388, emoji: '🛍️', label: 'Belgisches Viertel',     sub: 'Shopping · Tag 1 Nachmittag',       day: 1 },
-    { lat: 50.9441, lng: 6.9459, emoji: '🍺', label: 'Päffgen Friesenstraße',  sub: 'Abends trinken · Tag 1',            day: 1 },
-    { lat: 50.9512, lng: 6.9196, emoji: '👗', label: 'Ehrenfeld – Venloer Str.', sub: 'Secondhand-Shopping · Tag 2',     day: 2 },
-    { lat: 50.9249, lng: 6.9538, emoji: '🍖', label: 'trashxchic',              sub: 'Abendessen · Tag 2',                day: 2 },
-    { lat: 50.9389, lng: 6.9337, emoji: '🎸', label: 'Kantine Köln',            sub: 'Pothead-Konzert · Tag 2',          day: 2 },
-    { lat: 50.9212, lng: 6.9503, emoji: '🌳', label: 'Volksgarten',             sub: 'Herumstreunen · Tag 3',             day: 3 }
+  /* ── Location data ── */
+  var locations = [
+    {
+      lat: 50.9431, lng: 6.9591,
+      emoji: '🚆',
+      name: 'Köln Hauptbahnhof',
+      url: 'https://www.google.com/maps/search/?api=1&query=K%C3%B6ln+Hauptbahnhof'
+    },
+    {
+      lat: 50.9250, lng: 6.9530,
+      emoji: '🏠',
+      name: 'Airbnb',
+      url: 'https://www.airbnb.de/rooms/5391364?adults=3&check_in=2026-05-08&check_out=2026-05-10&search_mode=regular_search&source_impression_id=p3_1772967829_P3S7Fhy1sKy-w9mB&previous_page_section_name=1000&federated_search_id=e9e9c140-ab87-4551-88ce-815df4cd55ca'
+    },
+    {
+      lat: 50.9381, lng: 6.9388,
+      emoji: '🛍️',
+      name: 'Belgisches Viertel',
+      url: 'https://www.google.com/maps/search/?api=1&query=Belgisches+Viertel+K%C3%B6ln'
+    },
+    {
+      lat: 50.9441, lng: 6.9459,
+      emoji: '🍺',
+      name: 'Päffgen Friesenstraße',
+      url: 'https://www.google.com/maps/search/?api=1&query=P%C3%A4ffgen+Friesenstra%C3%9Fe+K%C3%B6ln'
+    },
+    {
+      lat: 50.9512, lng: 6.9196,
+      emoji: '👗',
+      name: 'Ehrenfeld – Venloer Str.',
+      url: 'https://www.google.com/maps/search/?api=1&query=Venloer+Stra%C3%9Fe+Ehrenfeld+K%C3%B6ln'
+    },
+    {
+      lat: 50.9249, lng: 6.9538,
+      emoji: '🍖',
+      name: 'trashxchic',
+      url: 'https://www.instagram.com/trashxchic?igsh=anFoMTU1dzNna2oz'
+    },
+    {
+      lat: 50.9389, lng: 6.9337,
+      emoji: '🎸',
+      name: 'Kantine Köln',
+      url: 'https://www.kantine.de'
+    },
+    {
+      lat: 50.9212, lng: 6.9503,
+      emoji: '🌳',
+      name: 'Volksgarten',
+      url: 'https://www.google.com/maps/search/?api=1&query=Volksgarten+K%C3%B6ln'
+    }
   ];
 
-  var dayColors = { 1: '#c0392b', 2: '#c9a84c', 3: '#27ae60' };
+  /* ── Build markers ── */
+  var activeMarkerEl = null;
 
-  locs.forEach(function (loc) {
-    var marker = L.marker([loc.lat, loc.lng], { icon: makeIcon(loc.emoji, dayColors[loc.day]) }).addTo(map);
-    marker.bindPopup('<strong>' + loc.emoji + ' ' + loc.label + '</strong><small>' + loc.sub + '</small>');
+  locations.forEach(function (loc) {
+    var iconEl = document.createElement('div');
+    iconEl.className = 'map-pin';
+    iconEl.textContent = loc.emoji;
+    iconEl.title = loc.name;
+
+    var icon = L.divIcon({
+      html: iconEl.outerHTML,
+      className: '',
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      popupAnchor: [0, -24]
+    });
+
+    var marker = L.marker([loc.lat, loc.lng], { icon: icon }).addTo(map);
+
+    marker.on('click', function () {
+      openModal(loc, marker.getElement());
+    });
   });
 
-  /* ─── Clickable checkpoints with QR reveal ─── */
-  document.querySelectorAll('.tl-item').forEach(function (item) {
-    var url = item.dataset.qr;
-    if (!url) return;
+  /* ── Modal ── */
+  var overlay   = document.getElementById('modal-overlay');
+  var emojiEl   = document.getElementById('modal-emoji');
+  var nameEl    = document.getElementById('modal-name');
+  var qrImg     = document.getElementById('modal-qr-img');
 
-    // Add "QR" badge to title
-    var strong = item.querySelector('.tl-content strong');
-    if (strong) {
-      var badge = document.createElement('span');
-      badge.className = 'qr-badge';
-      badge.textContent = '📷 QR';
-      strong.appendChild(badge);
-    }
+  function openModal(loc, markerEl) {
+    if (activeMarkerEl) activeMarkerEl.querySelector('.map-pin').classList.remove('active');
+    activeMarkerEl = markerEl;
+    if (markerEl) markerEl.querySelector('.map-pin').classList.add('active');
 
-    // Build hidden QR reveal panel
-    var reveal = document.createElement('div');
-    reveal.className = 'qr-reveal';
-    var encoded = encodeURIComponent(url);
-    var safeHref = url.replace(/&/g, '&amp;');
-    var shortLabel = url.length > 48 ? url.slice(0, 48) + '…' : url;
-    reveal.innerHTML =
-      '<div class="qr-reveal-inner">' +
-        '<div class="qr-img-wrap">' +
-          '<img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&amp;data=' + encoded + '" alt="QR Code" loading="lazy" />' +
-        '</div>' +
-        '<div class="qr-meta">' +
-          '<p>📱 Scannen oder direkt öffnen:</p>' +
-          '<a class="qr-open-link" href="' + safeHref + '" target="_blank" rel="noopener">' + shortLabel + '</a>' +
-        '</div>' +
-      '</div>';
-    item.querySelector('.tl-content').appendChild(reveal);
+    emojiEl.textContent = loc.emoji;
+    nameEl.textContent  = loc.name;
+    var encoded = encodeURIComponent(loc.url);
+    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encoded + '&color=0a0a0a&bgcolor=ffffff&margin=6';
+    overlay.classList.add('open');
+  }
 
-    item.addEventListener('click', function (e) {
-      if (e.target.closest('a')) return; // let links inside work normally
-      var isOpen = reveal.classList.contains('open');
-      // Close all open panels
-      document.querySelectorAll('.qr-reveal.open').forEach(function (r) { r.classList.remove('open'); });
-      document.querySelectorAll('.tl-item.active').forEach(function (i) { i.classList.remove('active'); });
-      if (!isOpen) {
-        reveal.classList.add('open');
-        item.classList.add('active');
-      }
-    });
+  function closeModal() {
+    overlay.classList.remove('open');
+    if (activeMarkerEl) activeMarkerEl.querySelector('.map-pin').classList.remove('active');
+    activeMarkerEl = null;
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
   });
 })();
 </script>
