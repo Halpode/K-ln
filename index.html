@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Köln 🖤 08.–10. Mai 2026</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    /* ─── Reset & base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f0f0f;
+      --card:      #1a1a1a;
+      --card2:     #222222;
+      --accent:    #f5c842;
+      --accent2:   #e87c3e;
+      --text:      #f0ece4;
+      --muted:     #888;
+      --border:    #2e2e2e;
+      --radius:    14px;
+      --font:      'Segoe UI', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Hero ─────────────────────────────────────── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 100px 24px 80px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, #2a1a00 0%, #0f0f0f 70%);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f5c842' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+      opacity: 0.5;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: #0f0f0f;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-dates {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .hero-dates .pill {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 22px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero-dates .pill .icon { margin-right: 6px; }
+
+    /* ─── Section layout ────────────────────────────── */
+    section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 800;
+      margin-bottom: 36px;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ─── Day cards ─────────────────────────────────── */
+    .days { display: flex; flex-direction: column; gap: 28px; }
+
+    .day-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 26px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .day-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: #0f0f0f;
+      font-size: 1.1rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .day-meta { flex: 1; }
+
+    .day-meta h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .day-meta .day-date {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .day-body { padding: 22px 26px; }
+
+    .event-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+
+    .event-list li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .event-icon {
+      font-size: 1.3rem;
+      width: 32px;
+      text-align: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .event-content { flex: 1; }
+
+    .event-content strong { display: block; font-weight: 700; font-size: 0.97rem; }
+
+    .event-content p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .event-content a { font-size: 0.82rem; }
+
+    /* Highlight band for the concert event */
+    .event-highlight {
+      background: linear-gradient(135deg, rgba(245,200,66,0.08) 0%, rgba(232,124,62,0.08) 100%);
+      border: 1px solid rgba(245,200,66,0.25);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 4px;
+    }
+
+    .event-highlight strong { color: var(--accent); }
+
+    /* ─── Transit section ───────────────────────────── */
+    .transit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .transit-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .transit-card .t-icon { font-size: 1.6rem; margin-bottom: 8px; }
+
+    .transit-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+
+    .transit-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+    .transit-card .line-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #0f0f0f;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin: 2px 2px 2px 0;
+    }
+
+    .transit-note {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .transit-note strong { color: var(--text); }
+
+    /* ─── Links grid ────────────────────────────────── */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .link-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+      display: block;
+      color: var(--text);
+    }
+
+    .link-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+
+    .link-card .lc-icon { font-size: 1.8rem; margin-bottom: 10px; }
+
+    .link-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+
+    .link-card p { font-size: 0.78rem; color: var(--muted); }
+
+    /* ─── QR section ────────────────────────────────── */
+    .qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .qr-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      display: inline-block;
+      box-shadow: 0 0 40px rgba(245,200,66,0.15);
+    }
+
+    #qrcode canvas, #qrcode img { display: block; }
+
+    .qr-caption {
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 340px;
+    }
+
+    .qr-url {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    /* ─── Footer ────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    footer .heart { color: var(--accent2); }
+
+    /* ─── Responsive tweaks ──────────────────────────── */
+    @media (max-width: 520px) {
+      .day-header { flex-direction: row; }
+      .hero-dates { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════ HERO ════════════════ -->
+  <div class="hero">
+    <div class="hero-tag">🎁 Dein Geschenk</div>
+    <h1>3 Tage<br><span>Köln</span></h1>
+    <p class="hero-subtitle">
+      Ein kleines Abenteuer für dich – mit Shopping, Gyros&nbsp;und dem besten Konzert des Jahres.
+    </p>
+    <div class="hero-dates">
+      <span class="pill"><span class="icon">📅</span>08.–10. Mai 2026</span>
+      <span class="pill"><span class="icon">🏠</span>Airbnb · 2 Nächte</span>
+      <span class="pill"><span class="icon">👥</span>3 Personen</span>
+      <span class="pill"><span class="icon">🎸</span>Pothead Konzert</span>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ════════════════ ITINERARY ════════════════ -->
+  <section id="programm">
+    <p class="section-label">Reiseplan</p>
+    <h2 class="section-title">Das Programm 🗺️</h2>
+
+    <div class="days">
+
+      <!-- Day 1 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-number">1</div>
+          <div class="day-meta">
+            <h3>Ankunft &amp; Einleben</h3>
+            <span class="day-date">Freitag, 08. Mai 2026</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <ul class="event-list">
+            <li>
+              <span class="event-icon">🚆</span>
+              <div class="event-content">
+                <strong>Anreise nach Köln</strong>
+                <p>Mit dem Zug oder Auto – Köln Hbf ist das Tor zur Stadt.</p>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🏠</span>
+              <div class="event-content">
+                <strong>Check-in Airbnb</strong>
+                <p>Koffer fallen lassen, kurz durchatmen, Wohnung erkunden.</p>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🌆</span>
+              <div class="event-content">
+                <strong>Nachmittag: Stadt-Spaziergang</strong>
+                <p>Rheinpromenade, Hohenzollernbrücke (Liebesschlösser!) oder einfach durch die Altstadt bummeln.</p>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🍻</span>
+              <div class="event-content">
+                <strong>Abends: Was trinken gehen</strong>
+                <p>Ein Kölsch in einer der urigen Brauhäuser – Früh, Gaffel oder Peters Brauhaus in der Altstadt.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Day 2 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-number">2</div>
+          <div class="day-meta">
+            <h3>Shopping, Gyros &amp; Konzert</h3>
+            <span class="day-date">Samstag, 09. Mai 2026</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <ul class="event-list">
+            <li>
+              <span class="event-icon">☕</span>
+              <div class="event-content">
+                <strong>Gemütlicher Morgen</strong>
+                <p>Ausschlafen, Kaffee, Frühstück – heute wird ein langer und toller Tag.</p>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">👗</span>
+              <div class="event-content">
+                <strong>Secondhand-Shopping</strong>
+                <p>
+                  Köln hat großartige Vintage-Läden – perfekt für Fotos und Stöbern.<br />
+                  Top-Spots: <strong>Ehrenfeld</strong> (Venloer Str., Körnerstr.) &amp;
+                  <strong>Belgisches Viertel</strong> (Maastrichter Str., Aachener Str.)
+                </p>
+                <a href="https://maps.google.com/?q=secondhand+shops+K%C3%B6ln+Ehrenfeld" target="_blank" rel="noopener">→ Google Maps: Secondhand Ehrenfeld</a>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🌮</span>
+              <div class="event-content">
+                <strong>17:00 – 22:00 Uhr · Abendessen @ trashxchic</strong>
+                <p>Gyros auf die Hand – das perfekte Pre-Show-Dinner.</p>
+                <a href="https://maps.google.com/?q=trashxchic+K%C3%B6ln" target="_blank" rel="noopener">→ trashxchic auf Google Maps</a>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🎸</span>
+              <div class="event-content">
+                <div class="event-highlight">
+                  <strong>🔥 POTHEAD – Live in der Kantine Köln</strong>
+                  <p style="color:#ccc; margin-top:6px;">
+                    Samstag, 09. Mai 2026<br />
+                    <strong style="color:#f5c842;">Kantine Köln</strong>, Aachener Str. 2, 50674 Köln<br />
+                    Einlass: ca. 19:00 Uhr · Show: ca. 20:00 Uhr
+                  </p>
+                  <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <a href="https://www.kantine-koeln.de" target="_blank" rel="noopener" style="font-size:0.82rem;">→ kantine-koeln.de</a>
+                    <a href="https://www.pothead.de" target="_blank" rel="noopener" style="font-size:0.82rem;">→ pothead.de</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Day 3 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-number">3</div>
+          <div class="day-meta">
+            <h3>Abreise &amp; Ausklang</h3>
+            <span class="day-date">Sonntag, 10. Mai 2026</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <ul class="event-list">
+            <li>
+              <span class="event-icon">🌅</span>
+              <div class="event-content">
+                <strong>Ausschlafen &amp; Check-out</strong>
+                <p>Letzter Morgen – Koffer packen, noch ein gutes Frühstück.</p>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🚶‍♀️</span>
+              <div class="event-content">
+                <strong>Spontan streunen</strong>
+                <p>
+                  Einfach durch die Nachbarschaft schlendern – vielleicht noch ein Café, ein letzter Blick auf den Dom
+                  oder ein Sonntagsmarkt mitnehmen.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="event-icon">🚆</span>
+              <div class="event-content">
+                <strong>Heimreise</strong>
+                <p>Mit schönen Erinnerungen im Gepäck.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ════════════════ ÖPNV ════════════════ -->
+  <section id="oepnv">
+    <p class="section-label">Anfahrt</p>
+    <h2 class="section-title">ÖPNV zur Kantine Köln 🚇</h2>
+
+    <div class="transit-grid">
+      <div class="transit-card">
+        <div class="t-icon">🏟️</div>
+        <h4>Kantine Köln</h4>
+        <p>
+          Aachener Str. 2<br />50674 Köln<br /><br />
+          <a href="https://maps.google.com/?q=Kantine+K%C3%B6ln,+Aachener+Str.+2,+50674+K%C3%B6ln" target="_blank" rel="noopener">→ Google Maps</a>
+        </p>
+      </div>
+
+      <div class="transit-card">
+        <div class="t-icon">🚇</div>
+        <h4>U-Bahn</h4>
+        <p>
+          <span class="line-badge">U1</span>
+          <span class="line-badge">U7</span>
+          <span class="line-badge">U9</span>
+          <br /><br />
+          Haltestelle <strong>Rudolfplatz</strong><br />
+          oder <strong>Zülpicher Platz</strong><br />
+          (ca. 5–8 Min. zu Fuß)
+        </p>
+      </div>
+
+      <div class="transit-card">
+        <div class="t-icon">🚌</div>
+        <h4>Bus</h4>
+        <p>
+          <span class="line-badge">136</span>
+          <span class="line-badge">146</span>
+          <br /><br />
+          Haltestelle <strong>Moltkestraße</strong><br />
+          oder <strong>Rudolfplatz</strong>
+        </p>
+      </div>
+
+      <div class="transit-card">
+        <div class="t-icon">🗺️</div>
+        <h4>Routenplanung</h4>
+        <p>
+          <a href="https://www.kvb.koeln/fahrtinfo/index.html" target="_blank" rel="noopener">KVB Fahrplanauskunft</a><br /><br />
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Kantine+K%C3%B6ln" target="_blank" rel="noopener">→ Route in Google Maps</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="transit-note">
+      💡 <strong>Tipp:</strong> Mit dem KVB-Tagesticket (Preisstufe 2) kommt ihr ab Köln Hbf überall günstig hin –
+      gilt für U-Bahn, S-Bahn und Bus im gesamten Stadtgebiet. Erhältlich an allen KVB-Automaten oder in der
+      <a href="https://www.kvb.koeln/tickets/index.html" target="_blank" rel="noopener">KVB-App</a>.
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ════════════════ LINKS ════════════════ -->
+  <section id="links">
+    <p class="section-label">Nützliches</p>
+    <h2 class="section-title">Alle Links auf einen Blick 🔗</h2>
+
+    <div class="links-grid">
+      <a class="link-card" href="https://www.kantine-koeln.de" target="_blank" rel="noopener">
+        <div class="lc-icon">🎸</div>
+        <h4>Kantine Köln</h4>
+        <p>Offizielle Website des Konzertorts</p>
+      </a>
+
+      <a class="link-card" href="https://www.pothead.de" target="_blank" rel="noopener">
+        <div class="lc-icon">🎶</div>
+        <h4>Pothead</h4>
+        <p>Band-Website &amp; aktuelle Tourinfos</p>
+      </a>
+
+      <a class="link-card" href="https://maps.google.com/?q=trashxchic+K%C3%B6ln" target="_blank" rel="noopener">
+        <div class="lc-icon">🌮</div>
+        <h4>trashxchic</h4>
+        <p>Gyros-Restaurant · 17–22 Uhr</p>
+      </a>
+
+      <a class="link-card" href="https://www.kvb.koeln" target="_blank" rel="noopener">
+        <div class="lc-icon">🚇</div>
+        <h4>KVB Köln</h4>
+        <p>Fahrpläne &amp; Tickets für den ÖPNV</p>
+      </a>
+
+      <a class="link-card" href="https://www.airbnb.de/s/K%C3%B6ln--Deutschland/homes" target="_blank" rel="noopener">
+        <div class="lc-icon">🏠</div>
+        <h4>Airbnb Köln</h4>
+        <p>Ferienwohnungen in Köln</p>
+      </a>
+
+      <a class="link-card" href="https://maps.google.com/?q=Secondhand+L%C3%A4den+K%C3%B6ln+Ehrenfeld" target="_blank" rel="noopener">
+        <div class="lc-icon">👗</div>
+        <h4>Secondhand Köln</h4>
+        <p>Vintage-Spots in Ehrenfeld &amp; Belgisches Viertel</p>
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ════════════════ QR CODE ════════════════ -->
+  <section id="qr">
+    <p class="section-label">QR-Code</p>
+    <h2 class="section-title">Schnellzugriff 📱</h2>
+
+    <div class="qr-wrap">
+      <p style="color:var(--muted); font-size:0.9rem; max-width:420px;">
+        Scanne den QR-Code, um diese Seite jederzeit auf deinem Handy zu öffnen –
+        alle Links, der Fahrplan und das Programm immer dabei.
+      </p>
+      <div class="qr-box">
+        <div id="qrcode"></div>
+      </div>
+      <p class="qr-caption">
+        Dieser Code öffnet den kompletten Reiseführer – kein App-Download nötig.
+      </p>
+      <div class="qr-url" id="qr-url-display"></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ════════════════ FOOTER ════════════════ -->
+  <footer>
+    <p>Gemacht mit <span class="heart">♥</span> · Köln 08.–10. Mai 2026</p>
+    <p style="margin-top:6px;">Viel Spaß – du wirst es lieben! 🖤</p>
+  </footer>
+
+  <!-- ════════════════ QR INIT ════════════════ -->
+  <script>
+    (function () {
+      // Use the current page URL so the QR code always points here
+      var url = window.location.href.split('#')[0];
+      document.getElementById('qr-url-display').textContent = url;
+
+      new QRCode(document.getElementById('qrcode'), {
+        text: url,
+        width: 220,
+        height: 220,
+        colorDark: '#0f0f0f',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    })();
+  </script>
+
+</body>
+</html>
