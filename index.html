@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎸 Köln-Trip 08.–10.05.2026</title>
+  <style>
+    /* ── Fonts ── */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;600&display=swap');
+
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0d0d0d;
+      --white:   #fdfcf7;
+      --cream:   #f4f0e6;
+      --red:     #c0392b;
+      --gold:    #c9a84c;
+      --muted:   #5c5446;
+      --card-bg: #1a1814;
+      --border:  #2e2b26;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 5rem 1.5rem 4rem;
+      background: linear-gradient(160deg, #0d0d0d 0%, #1b0a0a 50%, #0d0d0d 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(192,57,43,.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      line-height: 1.15;
+      margin-bottom: .5rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--red); }
+    .hero-subtitle {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      color: #b5a98a;
+      margin-top: .75rem;
+      margin-bottom: 2rem;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      justify-content: center;
+    }
+    .badge {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: .35rem .9rem;
+      font-size: .8rem;
+      color: #c9bfa8;
+    }
+
+    /* ── Layout ── */
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 3rem 1.25rem 4rem;
+    }
+
+    /* ── Section headings ── */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Day cards ── */
+    .days { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .day-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .day-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+    .day-number {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 50%;
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+    .day-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+    }
+    .day-info span {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    .day-card-body { padding: 1.25rem; }
+
+    .timeline { list-style: none; }
+    .timeline li {
+      display: flex;
+      gap: .9rem;
+      padding-bottom: 1.1rem;
+      position: relative;
+    }
+    .timeline li:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 1rem;
+      top: 1.6rem;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-dot {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      flex-shrink: 0;
+      margin-top: .15rem;
+    }
+    .tl-content strong {
+      display: block;
+      font-size: .95rem;
+      color: var(--white);
+    }
+    .tl-content p {
+      font-size: .85rem;
+      color: #958c7a;
+      margin-top: .2rem;
+    }
+    .tl-content a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .tl-content a:hover { text-decoration: underline; }
+
+    .highlight-banner {
+      margin-top: .8rem;
+      background: rgba(192,57,43,.12);
+      border: 1px solid rgba(192,57,43,.35);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      color: #e8a89c;
+      display: flex;
+      gap: .5rem;
+      align-items: flex-start;
+    }
+
+    /* ── ÖPNV section ── */
+    .transport-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .transport-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .transport-card h4 {
+      font-size: .9rem;
+      color: var(--gold);
+      margin-bottom: .5rem;
+    }
+    .transport-card p { font-size: .83rem; color: #9c9282; line-height: 1.5; }
+    .transport-card a { color: var(--gold); text-decoration: none; }
+    .transport-card a:hover { text-decoration: underline; }
+
+    .route-block {
+      margin-top: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+    }
+    .route-block h4 { font-size: .9rem; color: var(--white); margin-bottom: .6rem; }
+    .route-steps { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+    .route-steps li {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      font-size: .83rem;
+      color: #9c9282;
+    }
+    .kvb-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2rem;
+      height: 1.35rem;
+      border-radius: .25rem;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 0 .4rem;
+      flex-shrink: 0;
+    }
+    .kvb-1  { background: #e2001a; color: #fff; }
+    .kvb-7  { background: #f39200; color: #fff; }
+    .kvb-12 { background: #0069b4; color: #fff; }
+
+    /* ── Links section ── */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .link-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color .2s, background .2s;
+      display: block;
+    }
+    .link-card:hover {
+      border-color: var(--gold);
+      background: rgba(201,168,76,.05);
+    }
+    .link-card .icon { font-size: 1.5rem; margin-bottom: .4rem; display: block; }
+    .link-card strong { display: block; font-size: .9rem; color: var(--white); }
+    .link-card span { font-size: .78rem; color: var(--muted); }
+
+    /* ── QR section ── */
+    .qr-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+    .qr-image-wrap {
+      background: #fff;
+      padding: .6rem;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .qr-image-wrap img { display: block; width: 160px; height: 160px; }
+    .qr-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: .5rem;
+    }
+    .qr-text p { font-size: .85rem; color: #9c9282; }
+    .qr-text a { color: var(--gold); word-break: break-all; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    /* ── Divider ── */
+    section { margin-bottom: 3rem; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════ HERO ════════════════════════════════ -->
+<header class="hero">
+  <span class="hero-eyebrow">🎁 Ein Geschenk für dich</span>
+  <h1>Wir fahren nach<br><em>Köln</em></h1>
+  <p class="hero-subtitle">08. – 10. Mai 2026 &nbsp;·&nbsp; 2 Nächte &nbsp;·&nbsp; 3 Personen</p>
+  <div class="badge-row">
+    <span class="badge">🏠 Airbnb</span>
+    <span class="badge">🛍️ Secondhand-Shopping</span>
+    <span class="badge">🍖 trashxchic</span>
+    <span class="badge">🎸 Pothead-Konzert</span>
+    <span class="badge">☕ Spontane Erkundungen</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ════ 3-TAGE-PLAN ════ -->
+  <section>
+    <h2 class="section-title">🗓️ 3-Tage-Plan</h2>
+    <div class="days">
+
+      <!-- TAG 1 -->
+      <div class="day-card">
+        <div class="day-card-header">
+          <div class="day-number">1</div>
+          <div class="day-info">
+            <h3>Freitag, 08. Mai – Ankunft &amp; Einstimmen</h3>
+            <span>Check-in · Entspannen · Abends etwas trinken</span>
+          </div>
+        </div>
+        <div class="day-card-body">
+          <ul class="timeline">
+            <li>
+              <div class="tl-dot">🚂</div>
+              <div class="tl-content">
+                <strong>Ankunft in Köln</strong>
+                <p>Am Kölner Hauptbahnhof ankommen, Koffer schultern und erstmal den Dom bestaunen – er ist direkt vor der Tür.</p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🏠</div>
+              <div class="tl-content">
+                <strong>Check-in Airbnb</strong>
+                <p>Einchecken, Sachen abstellen, kurz durchatmen und frisch machen.</p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🌆</div>
+              <div class="tl-content">
+                <strong>Stadt entdecken</strong>
+                <p>Ein kleiner Spaziergang durch die Altstadt, am Rhein entlang – einfach ankommen.</p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🍻</div>
+              <div class="tl-content">
+                <strong>Abends etwas trinken</strong>
+                <p>Kölsch in einer der klassischen Brauhäuser (z. B. Früh am Dom oder Gaffel am Dom) oder gemütlich in einer Bar in der Südstadt.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TAG 2 -->
+      <div class="day-card">
+        <div class="day-card-header">
+          <div class="day-number">2</div>
+          <div class="day-info">
+            <h3>Samstag, 09. Mai – Das große Highlight 🎸</h3>
+            <span>Shopping · Essen · Pothead-Konzert</span>
+          </div>
+        </div>
+        <div class="day-card-body">
+          <ul class="timeline">
+            <li>
+              <div class="tl-dot">☕</div>
+              <div class="tl-content">
+                <strong>Gemütliches Frühstück</strong>
+                <p>Entspannt in die Gänge kommen – Frühstück im Café oder in der Wohnung.</p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">👗</div>
+              <div class="tl-content">
+                <strong>Secondhand-Shopping</strong>
+                <p>
+                  Köln ist ein Paradies für Vintage-Fans! Top-Reviere:<br>
+                  <strong style="color:#c9a84c">Ehrenfeld</strong> – Venloer Straße &amp; Nebenstraßen (viele unabhängige Läden)<br>
+                  <strong style="color:#c9a84c">Nippes</strong> – Neusser Straße, entspannte Atmosphäre<br>
+                  <strong style="color:#c9a84c">Belgisches Viertel</strong> – Boutiquen &amp; Vintage-Stores rund um die Maastrichter Str.
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🍖</div>
+              <div class="tl-content">
+                <strong>Abendessen bei trashxchic (ab 17 Uhr)</strong>
+                <p>
+                  Gyros &amp; gutes Essen in entspannter Atmosphäre.<br>
+                  <a href="https://www.instagram.com/trashxchic.koeln/" target="_blank" rel="noopener">→ trashxchic auf Instagram</a><br>
+                  Öffnungszeiten: 17:00 – 22:00 Uhr
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🎸</div>
+              <div class="tl-content">
+                <strong>Pothead-Konzert – Kantine Köln</strong>
+                <p>
+                  <a href="https://www.kantine.de" target="_blank" rel="noopener">Kantine Köln</a> · Aachener Str. 2, 50674 Köln<br>
+                  Das Highlight des Trips! Einlass checken und früh genug da sein.
+                </p>
+                <div class="highlight-banner">
+                  🎶 <span><strong>Pothead live auf der Bühne!</strong> Eines der besten Ska-/Punkrock-Konzerte des Jahres. Tickets nicht vergessen!</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TAG 3 -->
+      <div class="day-card">
+        <div class="day-card-header">
+          <div class="day-number">3</div>
+          <div class="day-info">
+            <h3>Sonntag, 10. Mai – Abreise</h3>
+            <span>Letzte Eindrücke · Herumstreunen · Heimreise</span>
+          </div>
+        </div>
+        <div class="day-card-body">
+          <ul class="timeline">
+            <li>
+              <div class="tl-dot">🌅</div>
+              <div class="tl-content">
+                <strong>Ausschlafen &amp; Check-out</strong>
+                <p>Kein Stress – gemütlich aufwachen, Frühstück, Sachen packen.</p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🚶</div>
+              <div class="tl-content">
+                <strong>Spontan in der Nähe herumstreunen</strong>
+                <p>
+                  Was immer sich ergibt: noch ein Café, ein Markt, ein Park.<br>
+                  Tipps: Volksgarten, Agnesviertel, Frühstück im Café Sehnsucht oder Café Hallmackenreuther.
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="tl-dot">🚂</div>
+              <div class="tl-content">
+                <strong>Heimreise</strong>
+                <p>Mit vollen Taschen und einem noch volleren Herzen Richtung Heimat.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /days -->
+  </section>
+
+  <!-- ════ ÖPNV ════ -->
+  <section>
+    <h2 class="section-title">🚌 ÖPNV – So kommt ihr zur Kantine</h2>
+
+    <div class="transport-grid">
+      <div class="transport-card">
+        <h4>📍 Kantine Köln</h4>
+        <p>
+          Aachener Str. 2<br>
+          50674 Köln<br>
+          (Nähe Rudolfplatz)
+        </p>
+      </div>
+      <div class="transport-card">
+        <h4>🗺️ KVB Fahrplanauskunft</h4>
+        <p>
+          <a href="https://www.kvb.koeln/fahrtplanung/" target="_blank" rel="noopener">kvb.koeln/fahrtplanung</a><br>
+          Live-Abfahrten, Verbindungen &amp; Tickets direkt beim KVB.
+        </p>
+      </div>
+      <div class="transport-card">
+        <h4>📱 KVB App</h4>
+        <p>
+          Die offizielle KVB-App für Android &amp; iOS – Tickets kaufen, Verbindungen suchen, Echtzeitinfo.<br>
+          Suchbegriff: <em>"KVB Köln"</em>
+        </p>
+      </div>
+      <div class="transport-card">
+        <h4>🔍 Google Maps</h4>
+        <p>
+          <a href="https://maps.app.goo.gl/Kantine-Koeln" target="_blank" rel="noopener">Kantine Köln auf Maps</a> oder einfach<br>
+          <em>"Kantine Köln, Aachener Str. 2"</em> eingeben.
+        </p>
+      </div>
+    </div>
+
+    <div class="route-block">
+      <h4>🚋 Route: Köln Hbf → Kantine (ca. 8 Min.)</h4>
+      <ul class="route-steps">
+        <li>
+          <span class="kvb-pill kvb-1">1</span>
+          <span>Straßenbahn Linie <strong>1</strong> Richtung <em>Junkersdorf</em> oder <em>Weiden West</em></span>
+        </li>
+        <li>
+          <span style="width:2rem;flex-shrink:0;text-align:center">→</span>
+          <span>Aussteigen an Haltestelle <strong>Rudolfplatz</strong></span>
+        </li>
+        <li>
+          <span style="width:2rem;flex-shrink:0;text-align:center">🚶</span>
+          <span>Ca. <strong>2 Minuten</strong> zu Fuß die Aachener Str. entlang bis Nr. 2</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="route-block" style="margin-top:.75rem">
+      <h4>🚋 Alternative: Linie 7 oder 12</h4>
+      <ul class="route-steps">
+        <li>
+          <span class="kvb-pill kvb-7">7</span>
+          <span>Linie <strong>7</strong> Richtung <em>Frechen Benzelrath</em> → Haltestelle <strong>Moltkestraße</strong></span>
+        </li>
+        <li>
+          <span class="kvb-pill kvb-12">12</span>
+          <span>Linie <strong>12</strong> Richtung <em>Dürener Str./Gürtel</em> → Haltestelle <strong>Moltkestraße</strong></span>
+        </li>
+        <li>
+          <span style="width:2rem;flex-shrink:0;text-align:center">🚶</span>
+          <span>Ca. <strong>5 Minuten</strong> zu Fuß Richtung Rudolfplatz / Aachener Str.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ ALLE LINKS ════ -->
+  <section>
+    <h2 class="section-title">🔗 Alle wichtigen Links</h2>
+    <div class="links-grid">
+      <a class="link-card" href="https://www.kantine.de" target="_blank" rel="noopener">
+        <span class="icon">🎵</span>
+        <strong>Kantine Köln</strong>
+        <span>Veranstaltungsort · kantine.de</span>
+      </a>
+      <a class="link-card" href="https://www.pothead.at" target="_blank" rel="noopener">
+        <span class="icon">🎸</span>
+        <strong>Pothead</strong>
+        <span>Offizielle Band-Website</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/trashxchic.koeln/" target="_blank" rel="noopener">
+        <span class="icon">🍖</span>
+        <strong>trashxchic</strong>
+        <span>Gyros &amp; Essen · 17–22 Uhr</span>
+      </a>
+      <a class="link-card" href="https://www.kvb.koeln/fahrtplanung/" target="_blank" rel="noopener">
+        <span class="icon">🚋</span>
+        <strong>KVB Fahrplanauskunft</strong>
+        <span>Kölner Verkehrs-Betriebe</span>
+      </a>
+      <a class="link-card" href="https://www.airbnb.de/s/K%C3%B6ln--Deutschland" target="_blank" rel="noopener">
+        <span class="icon">🏠</span>
+        <strong>Airbnb Köln</strong>
+        <span>Unterkünfte in Köln</span>
+      </a>
+      <a class="link-card" href="https://www.koeln-tourismus.de" target="_blank" rel="noopener">
+        <span class="icon">🗺️</span>
+        <strong>Köln Tourismus</strong>
+        <span>Tipps &amp; Sehenswürdigkeiten</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════ QR-CODE ════ -->
+  <section>
+    <h2 class="section-title">📱 QR-Code</h2>
+    <div class="qr-section">
+      <div class="qr-image-wrap">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fhalpode.github.io%2FK-ln%2F&color=0d0d0d&bgcolor=ffffff&margin=4"
+          alt="QR-Code für diese Seite"
+          width="160"
+          height="160"
+        />
+      </div>
+      <div class="qr-text">
+        <h3>Diese Seite immer dabei</h3>
+        <p>
+          Scanne diesen QR-Code, um den Reiseplan jederzeit auf deinem Handy aufzurufen – kein Drucken nötig.<br><br>
+          Direkt-Link:<br>
+          <a href="https://halpode.github.io/K-ln/" target="_blank" rel="noopener">https://halpode.github.io/K-ln/</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Gemacht mit ❤️ für den besten Köln-Trip 2026 &nbsp;·&nbsp; 08.–10. Mai &nbsp;·&nbsp; 3 Personen, 1 Abenteuer</p>
+</footer>
+
+</body>
+</html>
