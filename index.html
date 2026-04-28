@@ -254,6 +254,194 @@
       letter-spacing: .06em;
       text-transform: uppercase;
     }
+    /* ── Edit button (overlay on image, top-left) ── */
+    #btn-edit {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 10;
+      background: rgba(0,0,0,.72);
+      border: 1px solid #444;
+      color: #aaa;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    #btn-edit:hover, #btn-edit.active { border-color: #e00; color: #fff; background: #180000; }
+
+    /* ── Edit panel ── */
+    #edit-panel {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height .35s ease, opacity .25s ease;
+      border-top: 1px solid transparent;
+      margin-top: .2rem;
+    }
+    #edit-panel.open { max-height: 800px; opacity: 1; border-top-color: #1a1a1a; margin-top: .5rem; }
+    #edit-panel-inner { padding-top: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+    .edit-row { display: flex; flex-direction: column; gap: .2rem; }
+    .edit-row label { font-size: .63rem; color: #555; text-transform: uppercase; letter-spacing: .07em; }
+    .edit-row input, .edit-row textarea {
+      background: #111;
+      border: 1px solid #252525;
+      color: #ccc;
+      font-family: 'Inter', sans-serif;
+      font-size: .78rem;
+      padding: .38rem .5rem;
+      border-radius: 0;
+      resize: vertical;
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+    }
+    .edit-row input:focus, .edit-row textarea:focus { border-color: #555; }
+    #edit-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .4rem;
+      padding-top: .1rem;
+      padding-bottom: .5rem;
+    }
+    .edit-act-btn {
+      padding: .5rem;
+      background: #111;
+      border: 1px solid #252525;
+      color: #bbb;
+      font-family: 'Inter', sans-serif;
+      font-size: .71rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      cursor: pointer;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .edit-act-btn:hover { border-color: #e00; background: #180000; color: #fff; }
+    #edit-save:hover { border-color: #0a0; background: #001200; color: #0c0; }
+
+    /* ── Finalize / Export fixed button ── */
+    #btn-finalize {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 800;
+      background: #111;
+      border: 1px solid #333;
+      color: #666;
+      font-family: 'Inter', sans-serif;
+      font-size: .66rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .4rem .7rem;
+      cursor: pointer;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    #btn-finalize:hover { border-color: #e00; background: #180000; color: #fff; }
+    #btn-finalize.has-changes { border-color: #664400; color: #cc8800; }
+    #btn-finalize.has-changes:hover { border-color: #e00; background: #180000; color: #fff; }
+
+    /* ── Export overlay ── */
+    #export-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    #export-overlay.open { opacity: 1; pointer-events: all; }
+    #export-card {
+      background: #0a0a0a;
+      border: 2px solid #fff;
+      max-width: 640px;
+      width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 8px 8px 0 rgba(220,0,0,.35);
+    }
+    #export-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .7rem 1rem;
+      border-bottom: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    #export-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #fff;
+    }
+    #export-close {
+      background: rgba(0,0,0,.5);
+      border: 1px solid #333;
+      color: #888;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: border-color .15s, color .15s;
+    }
+    #export-close:hover { border-color: #e00; color: #fff; }
+    #export-textarea {
+      flex: 1;
+      overflow-y: auto;
+      background: #050505;
+      border: none;
+      color: #4d4;
+      font-family: 'Courier New', monospace;
+      font-size: .71rem;
+      line-height: 1.5;
+      padding: .9rem 1rem;
+      outline: none;
+      resize: none;
+    }
+    #export-footer {
+      padding: .55rem 1rem;
+      border-top: 1px solid #1a1a1a;
+      display: flex;
+      gap: .5rem;
+      flex-shrink: 0;
+    }
+    .export-btn {
+      padding: .38rem .75rem;
+      background: #111;
+      border: 1px solid #252525;
+      color: #bbb;
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      cursor: pointer;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .export-btn:hover { border-color: #e00; background: #180000; color: #fff; }
+    #export-copy:hover { border-color: #0a0; background: #001200; color: #0c0; }
   </style>
 </head>
 <body>
@@ -268,6 +456,7 @@
     <!-- Image (fixed, non-scrolling) -->
     <div id="modal-img-wrap">
       <img id="modal-img" src="" alt="" loading="lazy" />
+      <button id="btn-edit" aria-label="Bearbeiten">✏️</button>
       <button id="modal-close" aria-label="Schließen">✕</button>
     </div>
 
@@ -300,9 +489,56 @@
           <div id="modal-hint">Scannen zum Öffnen</div>
         </div>
       </div>
+
+      <div id="edit-panel">
+        <div id="edit-panel-inner">
+          <div class="edit-row">
+            <label>Bild-URL</label>
+            <input id="edit-img-url" type="text" />
+          </div>
+          <div class="edit-row">
+            <label>Name</label>
+            <input id="edit-name-inp" type="text" />
+          </div>
+          <div class="edit-row">
+            <label>Beschreibung</label>
+            <textarea id="edit-desc-inp" rows="3"></textarea>
+          </div>
+          <div class="edit-row">
+            <label>Highlights (eine pro Zeile)</label>
+            <textarea id="edit-hl-inp" rows="4"></textarea>
+          </div>
+          <div class="edit-row">
+            <label>Link</label>
+            <input id="edit-url-inp" type="text" />
+          </div>
+          <div id="edit-actions">
+            <button id="edit-save" class="edit-act-btn" type="button">💾 Speichern</button>
+            <button id="edit-reset" class="edit-act-btn" type="button">↩ Zurücksetzen</button>
+          </div>
+        </div>
+      </div>
     </div><!-- /modal-body -->
   </div><!-- /modal-card -->
 </div><!-- /modal-overlay -->
+
+<!-- Finalize / Export button -->
+<button id="btn-finalize" type="button">🔒 Export</button>
+
+<!-- Export overlay -->
+<div id="export-overlay">
+  <div id="export-card">
+    <div id="export-header">
+      <span id="export-title">🔒 Finale Version</span>
+      <button id="export-close" type="button">✕</button>
+    </div>
+    <textarea id="export-textarea" readonly></textarea>
+    <div id="export-footer">
+      <button id="export-copy" class="export-btn" type="button">📋 Kopieren</button>
+      <button id="export-reset-all" class="export-btn" type="button">🗑 Änderungen löschen</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
@@ -483,10 +719,24 @@
     }
   ];
 
+  /* ── Persistent overrides (localStorage) ── */
+  var STORAGE_KEY = 'kln_overrides';
+  var overrides = {};
+  try {
+    var _saved = localStorage.getItem(STORAGE_KEY);
+    if (_saved) overrides = JSON.parse(_saved);
+  } catch (e) {}
+
+  function getEffectiveLoc(i) {
+    var base = locations[i];
+    if (!overrides[i]) return base;
+    return Object.assign({}, base, overrides[i]);
+  }
+
   /* ── Build markers ── */
   var activeMarkerEl = null;
 
-  locations.forEach(function (loc) {
+  locations.forEach(function (loc, i) {
     var iconEl = document.createElement('div');
     iconEl.className = 'map-pin';
     iconEl.textContent = loc.emoji;
@@ -500,7 +750,7 @@
     });
 
     var marker = L.marker([loc.lat, loc.lng], { icon: icon }).addTo(map);
-    marker.on('click', function () { openModal(loc, marker.getElement()); });
+    marker.on('click', function () { openModal(getEffectiveLoc(i), marker.getElement(), i); });
   });
 
   /* ── Modal elements ── */
@@ -517,7 +767,20 @@
   var qrImg      = document.getElementById('modal-qr-img');
   var modalBody  = document.getElementById('modal-body');
 
-  function openModal(loc, markerEl) {
+  /* ── Edit / override elements ── */
+  var currentLocIdx  = -1;
+  var editPanelEl    = document.getElementById('edit-panel');
+  var btnEditEl      = document.getElementById('btn-edit');
+  var editImgUrlEl   = document.getElementById('edit-img-url');
+  var editNameInpEl  = document.getElementById('edit-name-inp');
+  var editDescInpEl  = document.getElementById('edit-desc-inp');
+  var editHlInpEl    = document.getElementById('edit-hl-inp');
+  var editUrlInpEl   = document.getElementById('edit-url-inp');
+  var editSaveBtn    = document.getElementById('edit-save');
+  var editResetBtn   = document.getElementById('edit-reset');
+
+  function openModal(loc, markerEl, locIdx) {
+    currentLocIdx = (locIdx !== undefined) ? locIdx : -1;
     /* Deactivate previous pin */
     if (activeMarkerEl) activeMarkerEl.querySelector('.map-pin').classList.remove('active');
     activeMarkerEl = markerEl;
@@ -557,6 +820,16 @@
     }
     btnTransit.href = 'https://www.google.com/maps/dir/?api=1&origin=' + origin + '&destination=' + dest + '&travelmode=transit';
 
+    /* Populate edit fields */
+    editImgUrlEl.value  = loc.img;
+    editNameInpEl.value = loc.name;
+    editDescInpEl.value = loc.desc;
+    editHlInpEl.value   = loc.highlights.join('\n');
+    editUrlInpEl.value  = loc.url;
+    /* Collapse edit panel */
+    editPanelEl.classList.remove('open');
+    btnEditEl.classList.remove('active');
+
     /* Scroll to top and open */
     modalBody.scrollTop = 0;
     overlay.classList.add('open');
@@ -576,11 +849,126 @@
     overlay.classList.remove('open');
     if (activeMarkerEl) activeMarkerEl.querySelector('.map-pin').classList.remove('active');
     activeMarkerEl = null;
+    editPanelEl.classList.remove('open');
+    btnEditEl.classList.remove('active');
   }
 
   document.getElementById('modal-close').addEventListener('click', closeModal);
   overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  /* ── Edit panel toggle ── */
+  btnEditEl.addEventListener('click', function () {
+    var open = editPanelEl.classList.toggle('open');
+    btnEditEl.classList.toggle('active', open);
+  });
+
+  /* Live image preview while typing URL */
+  editImgUrlEl.addEventListener('input', function () {
+    imgEl.src = editImgUrlEl.value;
+  });
+
+  /* Save override to localStorage */
+  editSaveBtn.addEventListener('click', function () {
+    if (currentLocIdx < 0) return;
+    var hl = editHlInpEl.value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    var patch = {
+      img:        editImgUrlEl.value.trim(),
+      name:       editNameInpEl.value.trim(),
+      desc:       editDescInpEl.value.trim(),
+      highlights: hl,
+      url:        editUrlInpEl.value.trim()
+    };
+    overrides[currentLocIdx] = patch;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides)); } catch (ex) {}
+    updateFinalizeBtn();
+    /* Re-render display */
+    var eff = getEffectiveLoc(currentLocIdx);
+    nameEl.textContent = eff.name;
+    descEl.textContent = eff.desc;
+    imgEl.src          = eff.img;
+    imgEl.alt          = eff.name;
+    btnWebsite.href    = eff.url;
+    hlEl.innerHTML = '';
+    eff.highlights.forEach(function (h) {
+      var tag = document.createElement('span');
+      tag.className = 'hl-tag';
+      tag.textContent = h;
+      hlEl.appendChild(tag);
+    });
+    /* Visual feedback */
+    editSaveBtn.textContent = '✅ Gespeichert!';
+    setTimeout(function () { editSaveBtn.textContent = '💾 Speichern'; }, 1600);
+  });
+
+  /* Reset single entry to original */
+  editResetBtn.addEventListener('click', function () {
+    if (currentLocIdx < 0) return;
+    var idx = currentLocIdx;
+    delete overrides[idx];
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides)); } catch (ex) {}
+    updateFinalizeBtn();
+    openModal(getEffectiveLoc(idx), activeMarkerEl, idx);
+    editPanelEl.classList.add('open');
+    btnEditEl.classList.add('active');
+  });
+
+  /* ── Finalize / Export ── */
+  var btnFinalize    = document.getElementById('btn-finalize');
+  var exportOverlay  = document.getElementById('export-overlay');
+  var exportTextarea = document.getElementById('export-textarea');
+  var exportClose    = document.getElementById('export-close');
+  var exportCopy     = document.getElementById('export-copy');
+  var exportResetAll = document.getElementById('export-reset-all');
+
+  function updateFinalizeBtn() {
+    btnFinalize.classList.toggle('has-changes', Object.keys(overrides).length > 0);
+  }
+  updateFinalizeBtn();
+
+  function buildExportJSON() {
+    return JSON.stringify(locations.map(function (loc, i) {
+      var e = getEffectiveLoc(i);
+      return { lat: e.lat, lng: e.lng, emoji: e.emoji, name: e.name, img: e.img,
+               desc: e.desc, highlights: e.highlights, url: e.url, isAirbnb: e.isAirbnb };
+    }), null, 4);
+  }
+
+  btnFinalize.addEventListener('click', function () {
+    exportTextarea.value = buildExportJSON();
+    exportOverlay.classList.add('open');
+  });
+
+  exportClose.addEventListener('click', function () { exportOverlay.classList.remove('open'); });
+  exportOverlay.addEventListener('click', function (e) {
+    if (e.target === exportOverlay) exportOverlay.classList.remove('open');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') exportOverlay.classList.remove('open');
+  });
+
+  exportCopy.addEventListener('click', function () {
+    exportTextarea.select();
+    var btn = exportCopy;
+    function done() {
+      btn.textContent = '✅ Kopiert!';
+      setTimeout(function () { btn.textContent = '📋 Kopieren'; }, 1800);
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(exportTextarea.value).then(done).catch(function () {
+        document.execCommand('copy'); done();
+      });
+    } else {
+      document.execCommand('copy'); done();
+    }
+  });
+
+  exportResetAll.addEventListener('click', function () {
+    if (!confirm('Alle gespeicherten Änderungen wirklich löschen?')) return;
+    overrides = {};
+    try { localStorage.removeItem(STORAGE_KEY); } catch (ex) {}
+    window.location.reload();
+  });
 
 })();
 </script>
