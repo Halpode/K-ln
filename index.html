@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Köln 08.–10.05.2026</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Full-screen map ── */
+    #map {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+
+    /* ── Google Maps zoom control styling ── */
+    .gm-control-active img { filter: invert(1) !important; }
+    .gmnoprint .gm-style-cc { display: none !important; }
+
+    /* ── Square punk map pins ── */
+    .map-pin {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #0a0a0a;
+      border: 2px solid #fff;
+      border-radius: 0;
+      font-size: 1.2rem;
+      box-shadow: 0 0 0 1px #000, 4px 4px 0 rgba(255,255,255,.08);
+      transition: border-color .15s, transform .15s;
+      line-height: 1;
+    }
+    .map-pin:hover  { border-color: #e00; transform: scale(1.1); }
+    .map-pin.active { border-color: #e00; background: #1a0000; }
+
+    /* ── Modal overlay ── */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      background: rgba(0,0,0,.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    #modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    /* ── Modal card ── */
+    #modal-card {
+      position: relative;
+      background: #0a0a0a;
+      border: 2px solid #fff;
+      border-radius: 0;
+      box-shadow: 8px 8px 0 rgba(220,0,0,.35), 0 0 0 1px #000;
+      max-width: 380px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(14px) scale(.97);
+      transition: transform .22s cubic-bezier(.34,1.2,.64,1);
+    }
+    #modal-overlay.open #modal-card { transform: translateY(0) scale(1); }
+
+    /* red top stripe */
+    #modal-stripe { height: 4px; background: #e00; flex-shrink: 0; }
+
+    /* ── Image section (fixed top) ── */
+    #modal-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 170px;
+      overflow: hidden;
+      background: #111;
+      flex-shrink: 0;
+    }
+    #modal-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(15%) contrast(1.05);
+    }
+    /* gradient overlay at bottom of image */
+    #modal-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 60px;
+      background: linear-gradient(transparent, #0a0a0a);
+      pointer-events: none;
+    }
+
+    /* ── Close button overlaid on image ── */
+    #modal-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 10;
+      background: rgba(0,0,0,.72);
+      border: 1px solid #444;
+      color: #aaa;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: border-color .15s, color .15s;
+    }
+    #modal-close:hover { border-color: #e00; color: #fff; }
+
+    /* ── Scrollable body ── */
+    #modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.1rem 1.3rem 1.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #2a2a2a #0a0a0a;
+    }
+
+    /* Name */
+    #modal-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: .55rem;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    #modal-emoji { font-size: 1.35rem; }
+
+    /* Description */
+    #modal-desc {
+      font-size: .83rem;
+      color: #999;
+      line-height: 1.6;
+      margin-bottom: .85rem;
+    }
+
+    /* Highlights */
+    #modal-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin-bottom: 1rem;
+    }
+    .hl-tag {
+      background: #111;
+      border: 1px solid #252525;
+      color: #bbb;
+      font-size: .71rem;
+      padding: .2rem .52rem;
+      border-radius: 0;
+      letter-spacing: .02em;
+    }
+
+    /* ── Action buttons row ── */
+    #modal-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .45rem;
+      margin-bottom: .6rem;
+    }
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .2rem;
+      padding: .6rem .3rem;
+      background: #111;
+      border: 1px solid #252525;
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .action-btn .btn-icon { font-size: 1.05rem; line-height: 1; }
+    .action-btn:hover, .action-btn.btn-active {
+      border-color: #e00;
+      background: #180000;
+      color: #fff;
+    }
+
+    /* ── QR reveal panel ── */
+    #qr-panel {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height .3s ease, opacity .25s ease;
+    }
+    #qr-panel.open { max-height: 240px; opacity: 1; }
+    #qr-panel-inner {
+      padding-top: .65rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .45rem;
+    }
+    #modal-qr {
+      background: #fff;
+      padding: .5rem;
+      border: 2px solid #fff;
+      box-shadow: 4px 4px 0 rgba(220,0,0,.2);
+    }
+    #modal-qr-img { display: block; width: 150px; height: 150px; }
+    #modal-hint {
+      font-size: .66rem;
+      color: #444;
+      text-align: center;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    /* ── Edit button (overlay on image, top-left) ── */
+    #btn-edit {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 10;
+      background: rgba(0,0,0,.72);
+      border: 1px solid #444;
+      color: #aaa;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    #btn-edit:hover, #btn-edit.active { border-color: #e00; color: #fff; background: #180000; }
+
+    /* ── Edit panel ── */
+    #edit-panel {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height .35s ease, opacity .25s ease;
+      border-top: 1px solid transparent;
+      margin-top: .2rem;
+    }
+    #edit-panel.open { max-height: 800px; opacity: 1; border-top-color: #1a1a1a; margin-top: .5rem; }
+    #edit-panel-inner { padding-top: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+    .edit-row { display: flex; flex-direction: column; gap: .2rem; }
+    .edit-row label { font-size: .63rem; color: #555; text-transform: uppercase; letter-spacing: .07em; }
+    .edit-row input, .edit-row textarea {
+      background: #111;
+      border: 1px solid #252525;
+      color: #ccc;
+      font-family: 'Inter', sans-serif;
+      font-size: .78rem;
+      padding: .38rem .5rem;
+      border-radius: 0;
+      resize: vertical;
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+    }
+    .edit-row input:focus, .edit-row textarea:focus { border-color: #555; }
+    #edit-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .4rem;
+      padding-top: .1rem;
+      padding-bottom: .5rem;
+    }
+    .edit-act-btn {
+      padding: .5rem;
+      background: #111;
+      border: 1px solid #252525;
+      color: #bbb;
+      font-family: 'Inter', sans-serif;
+      font-size: .71rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      cursor: pointer;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .edit-act-btn:hover { border-color: #e00; background: #180000; color: #fff; }
+    #edit-save:hover { border-color: #0a0; background: #001200; color: #0c0; }
+
+    /* ── Finalize / Export fixed button ── */
+    #btn-finalize {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 800;
+      background: #111;
+      border: 1px solid #333;
+      color: #666;
+      font-family: 'Inter', sans-serif;
+      font-size: .66rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .4rem .7rem;
+      cursor: pointer;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    #btn-finalize:hover { border-color: #e00; background: #180000; color: #fff; }
+    #btn-finalize.has-changes { border-color: #664400; color: #cc8800; }
+    #btn-finalize.has-changes:hover { border-color: #e00; background: #180000; color: #fff; }
+
+    /* ── Export overlay ── */
+    #export-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    #export-overlay.open { opacity: 1; pointer-events: all; }
+    #export-card {
+      background: #0a0a0a;
+      border: 2px solid #fff;
+      max-width: 640px;
+      width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 8px 8px 0 rgba(220,0,0,.35);
+    }
+    #export-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .7rem 1rem;
+      border-bottom: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    #export-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #fff;
+    }
+    #export-close {
+      background: rgba(0,0,0,.5);
+      border: 1px solid #333;
+      color: #888;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0;
+      transition: border-color .15s, color .15s;
+    }
+    #export-close:hover { border-color: #e00; color: #fff; }
+    #export-textarea {
+      flex: 1;
+      overflow-y: auto;
+      background: #050505;
+      border: none;
+      color: #4d4;
+      font-family: 'Courier New', monospace;
+      font-size: .71rem;
+      line-height: 1.5;
+      padding: .9rem 1rem;
+      outline: none;
+      resize: none;
+    }
+    #export-footer {
+      padding: .55rem 1rem;
+      border-top: 1px solid #1a1a1a;
+      display: flex;
+      gap: .5rem;
+      flex-shrink: 0;
+    }
+    .export-btn {
+      padding: .38rem .75rem;
+      background: #111;
+      border: 1px solid #252525;
+      color: #bbb;
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      cursor: pointer;
+      border-radius: 0;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .export-btn:hover { border-color: #e00; background: #180000; color: #fff; }
+    #export-copy:hover { border-color: #0a0; background: #001200; color: #0c0; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Info + QR Modal -->
+<div id="modal-overlay">
+  <div id="modal-card">
+    <div id="modal-stripe"></div>
+
+    <!-- Image (fixed, non-scrolling) -->
+    <div id="modal-img-wrap">
+      <img id="modal-img" src="" alt="" loading="lazy" />
+      <button id="btn-edit" aria-label="Bearbeiten">✏️</button>
+      <button id="modal-close" aria-label="Schließen">✕</button>
+    </div>
+
+    <!-- Scrollable content -->
+    <div id="modal-body">
+      <div id="modal-label">
+        <span id="modal-emoji"></span>
+        <span id="modal-name"></span>
+      </div>
+      <p id="modal-desc"></p>
+      <div id="modal-highlights"></div>
+
+      <div id="modal-actions">
+        <a id="btn-website" href="#" target="_blank" rel="noopener" class="action-btn">
+          <span class="btn-icon">🔗</span><span>Website</span>
+        </a>
+        <button id="btn-qr" class="action-btn" type="button">
+          <span class="btn-icon">📱</span><span>QR Code</span>
+        </button>
+        <a id="btn-transit" href="#" target="_blank" rel="noopener" class="action-btn">
+          <span class="btn-icon">🚌</span><span>Verbindung</span>
+        </a>
+      </div>
+
+      <div id="qr-panel">
+        <div id="qr-panel-inner">
+          <div id="modal-qr">
+            <img id="modal-qr-img" src="" alt="QR Code" width="150" height="150" />
+          </div>
+          <div id="modal-hint">Scannen zum Öffnen</div>
+        </div>
+      </div>
+
+      <div id="edit-panel">
+        <div id="edit-panel-inner">
+          <div class="edit-row">
+            <label>Bild-URL</label>
+            <input id="edit-img-url" type="text" />
+          </div>
+          <div class="edit-row">
+            <label>Name</label>
+            <input id="edit-name-inp" type="text" />
+          </div>
+          <div class="edit-row">
+            <label>Beschreibung</label>
+            <textarea id="edit-desc-inp" rows="3"></textarea>
+          </div>
+          <div class="edit-row">
+            <label>Highlights (eine pro Zeile)</label>
+            <textarea id="edit-hl-inp" rows="4"></textarea>
+          </div>
+          <div class="edit-row">
+            <label>Link</label>
+            <input id="edit-url-inp" type="text" />
+          </div>
+          <div id="edit-actions">
+            <button id="edit-save" class="edit-act-btn" type="button">💾 Speichern</button>
+            <button id="edit-reset" class="edit-act-btn" type="button">↩ Zurücksetzen</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /modal-body -->
+  </div><!-- /modal-card -->
+</div><!-- /modal-overlay -->
+
+<!-- Finalize / Export button -->
+<button id="btn-finalize" type="button">🔒 Export</button>
+
+<!-- Export overlay -->
+<div id="export-overlay">
+  <div id="export-card">
+    <div id="export-header">
+      <span id="export-title">🔒 Finale Version</span>
+      <button id="export-close" type="button">✕</button>
+    </div>
+    <textarea id="export-textarea" readonly></textarea>
+    <div id="export-footer">
+      <button id="export-copy" class="export-btn" type="button">📋 Kopieren</button>
+      <button id="export-reset-all" class="export-btn" type="button">🗑 Änderungen löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ⚠️ Ersetze YOUR_API_KEY mit deinem Google Maps API-Key aus der Google Cloud Console -->
+<script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&loading=async&callback=initMap"></script>
+<script>
+window.initMap = function () {
+  'use strict';
+
+  /* Airbnb coords – used as transit origin for all other locations */
+  var ABB_LAT = 50.9250, ABB_LNG = 6.9530;
+
+  /* ── Retro map style (from Static Maps URL) ── */
+  var MAP_STYLES = [
+    { elementType: 'geometry', stylers: [{ color: '#ebe3cd' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#523735' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f1e6' }] },
+    { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#c9b2a6' }] },
+    { featureType: 'administrative.land_parcel', elementType: 'geometry.stroke', stylers: [{ color: '#dcd2be' }] },
+    { featureType: 'administrative.land_parcel', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+    { featureType: 'administrative.land_parcel', elementType: 'labels.text.fill', stylers: [{ color: '#ae9e90' }] },
+    { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'poi', elementType: 'labels.text', stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#93817c' }] },
+    { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi.park', elementType: 'geometry.fill', stylers: [{ color: '#a5b076' }] },
+    { featureType: 'poi.park', elementType: 'labels.text', stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#447530' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f1e6' }] },
+    { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#fdfcf8' }] },
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#f8c967' }] },
+    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#e9bc62' }] },
+    { featureType: 'road.highway.controlled_access', elementType: 'geometry', stylers: [{ color: '#e98d58' }] },
+    { featureType: 'road.highway.controlled_access', elementType: 'geometry.stroke', stylers: [{ color: '#db8555' }] },
+    { featureType: 'road.local', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+    { featureType: 'road.local', elementType: 'labels.text.fill', stylers: [{ color: '#806b63' }] },
+    { featureType: 'transit.line', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'transit.line', elementType: 'labels.text.fill', stylers: [{ color: '#8f7d77' }] },
+    { featureType: 'transit.line', elementType: 'labels.text.stroke', stylers: [{ color: '#ebe3cd' }] },
+    { featureType: 'transit.station', elementType: 'geometry', stylers: [{ color: '#dfd2ae' }] },
+    { featureType: 'water', elementType: 'geometry.fill', stylers: [{ color: '#b9d3c2' }] },
+    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#92998d' }] }
+  ];
+
+  /* ── Map ── */
+  var map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 50.9340, lng: 6.9495 },
+    zoom: 13,
+    styles: MAP_STYLES,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false
+  });
+
+  /* ── Location data ── */
+  var locations = [
+    {
+      lat: 50.9431, lng: 6.9591,
+      emoji: '🚆',
+      name: 'Köln Hauptbahnhof',
+      img: 'https://picsum.photos/seed/koeln-hbf/480/200',
+      desc: 'Kölns zentraler Bahnhof – direkt vor der Tür der mächtige Kölner Dom. Hier startet das Abenteuer.',
+      highlights: ['🏛️ Dom nebenan', '🚇 ICE & S-Bahn', '🚶 5 Min zur Altstadt'],
+      url: 'https://www.google.com/maps/search/?api=1&query=K%C3%B6ln+Hauptbahnhof',
+      isAirbnb: false
+    },
+    {
+      lat: ABB_LAT, lng: ABB_LNG,
+      emoji: '🏠',
+      name: 'Airbnb – Unsere Base',
+      img: 'https://picsum.photos/seed/airbnb-kln/480/200',
+      desc: 'Unsere Unterkunft für den Köln-Trip. Check-in Freitag, Check-out Sonntag. Koffer fallen lassen!',
+      highlights: ['📅 08.–10. Mai 2026', '👥 3 Personen', '🔑 Check-in beachten'],
+      url: 'https://www.airbnb.de/rooms/5391364?adults=3&check_in=2026-05-08&check_out=2026-05-10&search_mode=regular_search&source_impression_id=p3_1772967829_P3S7Fhy1sKy-w9mB&previous_page_section_name=1000&federated_search_id=e9e9c140-ab87-4551-88ce-815df4cd55ca',
+      isAirbnb: true
+    },
+    {
+      lat: 50.9441, lng: 6.9459,
+      emoji: '🍺',
+      name: 'Päffgen Friesenstraße',
+      img: 'https://picsum.photos/seed/paeffgen/480/200',
+      desc: 'Eine der ältesten Brauereigaststätten Kölns. Kölsch direkt vom Fass, rustikales Flair – immer belebt.',
+      highlights: ['🍺 Kölsch vom Fass', '⏰ ab 11 Uhr', '📍 Friesenstr. 64–66'],
+      url: 'https://www.google.com/maps/search/?api=1&query=P%C3%A4ffgen+Friesenstra%C3%9Fe+K%C3%B6ln',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9512, lng: 6.9196,
+      emoji: '👗',
+      name: 'Ehrenfeld – Venloer Str.',
+      img: 'https://picsum.photos/seed/ehrenfeld/480/200',
+      desc: 'Kölns Kreativviertel mit Streetart, unabhängigen Shops und dem besten Secondhand-Angebot der Stadt.',
+      highlights: ['🎨 Streetart überall', '🧥 Top Vintage-Shops', '🚇 KVB Linie 3 / 4'],
+      url: 'https://www.google.com/maps/search/?api=1&query=Venloer+Stra%C3%9Fe+Ehrenfeld+K%C3%B6ln',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9249, lng: 6.9538,
+      emoji: '🍖',
+      name: 'trashxchic',
+      img: 'https://picsum.photos/seed/trashxchic/480/200',
+      desc: 'Hier essen, trinken und abhängen – ab 17 Uhr gibt\'s Gyros und gute Vibes. Genau das Richtige nach dem Shopping.',
+      highlights: ['🥙 Gyros & mehr', '⏰ 17:00–22:00 Uhr', '📸 @trashxchic'],
+      url: 'https://www.instagram.com/trashxchic?igsh=anFoMTU1dzNna2oz',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9389, lng: 6.9337,
+      emoji: '🎸',
+      name: 'Kantine Köln',
+      img: 'https://picsum.photos/seed/kantine-punk/480/200',
+      desc: 'Das Highlight des Trips – Pothead live! Ska-Punk at its finest in einer der besten Locations der Stadt.',
+      highlights: ['🎸 Pothead live!', '📍 Aachener Str. 2', '🚋 Haltestelle Rudolfplatz'],
+      url: 'https://www.kantine.de',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9212, lng: 6.9503,
+      emoji: '🌳',
+      name: 'Volksgarten',
+      img: 'https://picsum.photos/seed/volksgarten/480/200',
+      desc: 'Kölns grüne Oase in der Südstadt – ideal zum Abschalten, Spazieren oder für einen ruhigen Sonntagmorgen.',
+      highlights: ['🌿 Großer Stadtpark', '🏞️ Teich & Wege', '🧘 Ruhe & Natur'],
+      url: 'https://www.google.com/maps/search/?api=1&query=Volksgarten+K%C3%B6ln',
+      isAirbnb: false
+    },
+    /* ── Secondhand / Shops ── */
+    {
+      lat: 50.9370, lng: 6.9985,
+      emoji: '♻️',
+      name: 'fairstore Kalk – Diakonie',
+      img: 'https://picsum.photos/seed/fairstore-kalk/480/200',
+      desc: 'Soziales Kaufhaus der Diakonie Michaelshoven. Gut erhaltene Kleidung, Möbel, Bücher & Haushalt zu fairen Preisen. Menschen mit geringem Einkommen erhalten bis zu 30 % Rabatt.',
+      highlights: ['♻️ Secondhand & Spenden', '💚 Soziales Kaufhaus', '🏷️ Bis –30 % für Geringverdiener', '⏰ Mo–Fr 10–18 · Sa 10–15', '📍 Kalker Hauptstr. 177'],
+      url: 'https://www.diakonie-michaelshoven.de',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9458, lng: 6.9592,
+      emoji: '🖼️',
+      name: 'ARC Store Gallery',
+      img: 'https://picsum.photos/seed/arc-store/480/200',
+      desc: 'Vintage, Second Hand & Outlet mit Galerie-Flair. Textilien, Möbel, Fahrräder und vieles mehr – direkt auf der Eigelstein nahe HBF.',
+      highlights: ['🧥 Vintage & Second Hand', '🚲 Möbel & Fahrräder', '🖼️ Gallery-Space', '⏰ Mo–Sa 12–17 Uhr', '📍 Eigelstein 23'],
+      url: 'https://www.instagram.com/arc_store_gallery/',
+      isAirbnb: false
+    },
+    /* ── Vegane Restaurants & Cafés ── */
+    {
+      lat: 50.9204, lng: 6.9533,
+      emoji: '🌱',
+      name: 'Chickpea Köln',
+      img: 'https://picsum.photos/seed/chickpea-kln/480/200',
+      desc: 'Veganes Restaurant in der Südstadt – orientalisch-mediterrane Küche, frische Bowls und Mezze. Sehr beliebt, kommt früh!',
+      highlights: ['🌱 100 % VEGAN', '🥙 Bowls & Mezze', '📍 Südstadt / Chlodwigplatz'],
+      url: 'https://www.google.com/maps/search/vegan+/@50.9204,6.9533,15z/data=!4m2!2m1!6e5',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9495, lng: 6.9228,
+      emoji: '🌱',
+      name: 'ExtraGrün',
+      img: 'https://picsum.photos/seed/extragruen/480/200',
+      desc: 'Veganes Restaurant in Ehrenfeld mit wechselndem Tagesmenü, saisonaler Küche und gemütlicher Atmosphäre.',
+      highlights: ['🌱 100 % VEGAN', '🍽️ Saisonale Küche', '📍 Ehrenfeld'],
+      url: 'https://www.google.com/maps/search/vegan+/@50.9495,6.9228,15z/data=!4m2!2m1!6e5',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9390, lng: 6.9472,
+      emoji: '🌱',
+      name: 'Loving Hut Köln',
+      img: 'https://picsum.photos/seed/lovinghut-kln/480/200',
+      desc: 'Internationale vegane Küche mitten in der Stadt. Günstiges Mittagsmenü, asiatische Gerichte und Smoothies.',
+      highlights: ['🌱 100 % VEGAN', '🍜 Asiatisch & international', '💶 Günstiges Mittagsmenü', '📍 Innenstadt'],
+      url: 'https://www.google.com/maps/search/vegan+/@50.9390,6.9472,15z/data=!4m2!2m1!6e5',
+      isAirbnb: false
+    },
+    /* ── Supermärkte nahe Airbnb ── */
+    {
+      lat: 50.9187, lng: 6.9543,
+      emoji: '🛒',
+      name: 'REWE Südstadt',
+      img: 'https://picsum.photos/seed/rewe-sued/480/200',
+      desc: 'Großer REWE fußläufig vom Airbnb – breites Sortiment, Backshop und lange Öffnungszeiten.',
+      highlights: ['🛒 Vollsortimenter', '🥖 Backshop', '⏰ Mo–Sa 7–22 Uhr', '📍 Nähe Chlodwigplatz'],
+      url: 'https://www.google.com/maps/search/?api=1&query=REWE+K%C3%B6ln+S%C3%BCdstadt',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9242, lng: 6.9508,
+      emoji: '🛒',
+      name: 'Penny Südstadt',
+      img: 'https://picsum.photos/seed/penny-sued/480/200',
+      desc: 'Penny-Discounter direkt in der Nähe der Unterkunft – günstig einkaufen für Frühstück & Snacks.',
+      highlights: ['🛒 Discounter', '💶 Günstig', '⏰ Mo–Sa 7–22 Uhr', '📍 Südstadt'],
+      url: 'https://www.google.com/maps/search/?api=1&query=Penny+K%C3%B6ln+S%C3%BCdstadt',
+      isAirbnb: false
+    },
+    {
+      lat: 50.9268, lng: 6.9482,
+      emoji: '🛒',
+      name: 'Netto Südstadt',
+      img: 'https://picsum.photos/seed/netto-sued/480/200',
+      desc: 'Netto Marken-Discount in wenigen Minuten vom Airbnb erreichbar. Ideal für schnelle Einkäufe.',
+      highlights: ['🛒 Discounter', '💶 Günstig', '⏰ Mo–Sa 7–21 Uhr', '📍 Südstadt'],
+      url: 'https://www.google.com/maps/search/?api=1&query=Netto+K%C3%B6ln+S%C3%BCdstadt',
+      isAirbnb: false
+    }
+  ];
+
+  /* ── Persistent overrides (localStorage) ── */
+  var STORAGE_KEY = 'kln_overrides';
+  var overrides = {};
+  try {
+    var _saved = localStorage.getItem(STORAGE_KEY);
+    if (_saved) overrides = JSON.parse(_saved);
+  } catch (e) {}
+
+  function getEffectiveLoc(i) {
+    var base = locations[i];
+    if (!overrides[i]) return base;
+    return Object.assign({}, base, overrides[i]);
+  }
+
+  /* ── Custom HTML-Marker via OverlayView (kompatibel mit map styles) ── */
+  function PinOverlay(opts) {
+    this._lat   = opts.lat;
+    this._lng   = opts.lng;
+    this._emoji = opts.emoji;
+    this._name  = opts.name;
+    this._click = opts.onClick;
+    this.setMap(opts.map);
+  }
+  PinOverlay.prototype = Object.create(google.maps.OverlayView.prototype);
+  PinOverlay.prototype.onAdd = function () {
+    var wrapper = document.createElement('div');
+    wrapper.style.position = 'absolute';
+    var pin = document.createElement('div');
+    pin.className  = 'map-pin';
+    pin.textContent = this._emoji;
+    pin.title       = this._name;
+    wrapper.appendChild(pin);
+    this._wrapper = wrapper;
+    this._pin     = pin;
+    var self = this;
+    wrapper.addEventListener('click', function () { self._click(); });
+    this.getPanes().overlayMouseTarget.appendChild(wrapper);
+  };
+  PinOverlay.prototype.draw = function () {
+    var p = this.getProjection().fromLatLngToDivPixel(
+      new google.maps.LatLng(this._lat, this._lng)
+    );
+    this._wrapper.style.left = (p.x - 20) + 'px';
+    this._wrapper.style.top  = (p.y - 20) + 'px';
+  };
+  PinOverlay.prototype.onRemove = function () {
+    if (this._wrapper) { this._wrapper.parentNode.removeChild(this._wrapper); this._wrapper = null; }
+  };
+
+  /* ── Build markers ── */
+  var activeMarkerEl = null;
+
+  locations.forEach(function (loc, i) {
+    var pinObj = new PinOverlay({
+      lat: loc.lat, lng: loc.lng,
+      emoji: loc.emoji, name: loc.name,
+      map: map,
+      onClick: function () { openModal(getEffectiveLoc(i), pinObj._pin, i); }
+    });
+  });
+
+  /* ── Modal elements ── */
+  var overlay    = document.getElementById('modal-overlay');
+  var emojiEl    = document.getElementById('modal-emoji');
+  var nameEl     = document.getElementById('modal-name');
+  var descEl     = document.getElementById('modal-desc');
+  var hlEl       = document.getElementById('modal-highlights');
+  var imgEl      = document.getElementById('modal-img');
+  var btnWebsite = document.getElementById('btn-website');
+  var btnQr      = document.getElementById('btn-qr');
+  var btnTransit = document.getElementById('btn-transit');
+  var qrPanel    = document.getElementById('qr-panel');
+  var qrImg      = document.getElementById('modal-qr-img');
+  var modalBody  = document.getElementById('modal-body');
+
+  /* ── Edit / override elements ── */
+  var currentLocIdx  = -1;
+  var editPanelEl    = document.getElementById('edit-panel');
+  var btnEditEl      = document.getElementById('btn-edit');
+  var editImgUrlEl   = document.getElementById('edit-img-url');
+  var editNameInpEl  = document.getElementById('edit-name-inp');
+  var editDescInpEl  = document.getElementById('edit-desc-inp');
+  var editHlInpEl    = document.getElementById('edit-hl-inp');
+  var editUrlInpEl   = document.getElementById('edit-url-inp');
+  var editSaveBtn    = document.getElementById('edit-save');
+  var editResetBtn   = document.getElementById('edit-reset');
+
+  function openModal(loc, markerEl, locIdx) {
+    currentLocIdx = (locIdx !== undefined) ? locIdx : -1;
+    /* Deactivate previous pin */
+    if (activeMarkerEl) activeMarkerEl.classList.remove('active');
+    activeMarkerEl = markerEl;
+    if (markerEl) markerEl.classList.add('active');
+
+    /* Reset QR state */
+    qrPanel.classList.remove('open');
+    btnQr.classList.remove('btn-active');
+    qrImg.src = '';
+
+    /* Fill content */
+    emojiEl.textContent = loc.emoji;
+    nameEl.textContent  = loc.name;
+    descEl.textContent  = loc.desc;
+    imgEl.src           = loc.img;
+    imgEl.alt           = loc.name;
+
+    hlEl.innerHTML = '';
+    loc.highlights.forEach(function (h) {
+      var tag = document.createElement('span');
+      tag.className = 'hl-tag';
+      tag.textContent = h;
+      hlEl.appendChild(tag);
+    });
+
+    /* Website button */
+    btnWebsite.href = loc.url;
+
+    /* Transit button – from Airbnb to this location (or HBF→Airbnb for the Airbnb pin) */
+    var origin, dest;
+    if (loc.isAirbnb) {
+      origin = '50.9431,6.9591'; /* HBF */
+      dest   = ABB_LAT + ',' + ABB_LNG;
+    } else {
+      origin = ABB_LAT + ',' + ABB_LNG;
+      dest   = loc.lat + ',' + loc.lng;
+    }
+    btnTransit.href = 'https://www.google.com/maps/dir/?api=1&origin=' + origin + '&destination=' + dest + '&travelmode=transit';
+
+    /* Populate edit fields */
+    editImgUrlEl.value  = loc.img;
+    editNameInpEl.value = loc.name;
+    editDescInpEl.value = loc.desc;
+    editHlInpEl.value   = loc.highlights.join('\n');
+    editUrlInpEl.value  = loc.url;
+    /* Collapse edit panel */
+    editPanelEl.classList.remove('open');
+    btnEditEl.classList.remove('active');
+
+    /* Scroll to top and open */
+    modalBody.scrollTop = 0;
+    overlay.classList.add('open');
+  }
+
+  /* QR toggle (lazy-load) */
+  btnQr.addEventListener('click', function () {
+    var open = qrPanel.classList.toggle('open');
+    btnQr.classList.toggle('btn-active', open);
+    if (open && !qrImg.src.includes('qrserver')) {
+      var encoded = encodeURIComponent(btnWebsite.href);
+      qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encoded + '&color=0a0a0a&bgcolor=ffffff&margin=6';
+    }
+  });
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    if (activeMarkerEl) activeMarkerEl.classList.remove('active');
+    activeMarkerEl = null;
+    editPanelEl.classList.remove('open');
+    btnEditEl.classList.remove('active');
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  /* ── Edit panel toggle ── */
+  btnEditEl.addEventListener('click', function () {
+    var open = editPanelEl.classList.toggle('open');
+    btnEditEl.classList.toggle('active', open);
+  });
+
+  /* Live image preview while typing URL */
+  editImgUrlEl.addEventListener('input', function () {
+    imgEl.src = editImgUrlEl.value;
+  });
+
+  /* Save override to localStorage */
+  editSaveBtn.addEventListener('click', function () {
+    if (currentLocIdx < 0) return;
+    var hl = editHlInpEl.value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    var patch = {
+      img:        editImgUrlEl.value.trim(),
+      name:       editNameInpEl.value.trim(),
+      desc:       editDescInpEl.value.trim(),
+      highlights: hl,
+      url:        editUrlInpEl.value.trim()
+    };
+    overrides[currentLocIdx] = patch;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides)); } catch (ex) {}
+    updateFinalizeBtn();
+    /* Re-render display */
+    var eff = getEffectiveLoc(currentLocIdx);
+    nameEl.textContent = eff.name;
+    descEl.textContent = eff.desc;
+    imgEl.src          = eff.img;
+    imgEl.alt          = eff.name;
+    btnWebsite.href    = eff.url;
+    hlEl.innerHTML = '';
+    eff.highlights.forEach(function (h) {
+      var tag = document.createElement('span');
+      tag.className = 'hl-tag';
+      tag.textContent = h;
+      hlEl.appendChild(tag);
+    });
+    /* Visual feedback */
+    editSaveBtn.textContent = '✅ Gespeichert!';
+    setTimeout(function () { editSaveBtn.textContent = '💾 Speichern'; }, 1600);
+  });
+
+  /* Reset single entry to original */
+  editResetBtn.addEventListener('click', function () {
+    if (currentLocIdx < 0) return;
+    var idx = currentLocIdx;
+    delete overrides[idx];
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides)); } catch (ex) {}
+    updateFinalizeBtn();
+    openModal(getEffectiveLoc(idx), activeMarkerEl, idx);
+    editPanelEl.classList.add('open');
+    btnEditEl.classList.add('active');
+  });
+
+  /* ── Finalize / Export ── */
+  var btnFinalize    = document.getElementById('btn-finalize');
+  var exportOverlay  = document.getElementById('export-overlay');
+  var exportTextarea = document.getElementById('export-textarea');
+  var exportClose    = document.getElementById('export-close');
+  var exportCopy     = document.getElementById('export-copy');
+  var exportResetAll = document.getElementById('export-reset-all');
+
+  function updateFinalizeBtn() {
+    btnFinalize.classList.toggle('has-changes', Object.keys(overrides).length > 0);
+  }
+  updateFinalizeBtn();
+
+  function buildExportJSON() {
+    return JSON.stringify(locations.map(function (loc, i) {
+      var e = getEffectiveLoc(i);
+      return { lat: e.lat, lng: e.lng, emoji: e.emoji, name: e.name, img: e.img,
+               desc: e.desc, highlights: e.highlights, url: e.url, isAirbnb: e.isAirbnb };
+    }), null, 4);
+  }
+
+  btnFinalize.addEventListener('click', function () {
+    exportTextarea.value = buildExportJSON();
+    exportOverlay.classList.add('open');
+  });
+
+  exportClose.addEventListener('click', function () { exportOverlay.classList.remove('open'); });
+  exportOverlay.addEventListener('click', function (e) {
+    if (e.target === exportOverlay) exportOverlay.classList.remove('open');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') exportOverlay.classList.remove('open');
+  });
+
+  exportCopy.addEventListener('click', function () {
+    exportTextarea.select();
+    var btn = exportCopy;
+    function done() {
+      btn.textContent = '✅ Kopiert!';
+      setTimeout(function () { btn.textContent = '📋 Kopieren'; }, 1800);
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(exportTextarea.value).then(done).catch(function () {
+        document.execCommand('copy'); done();
+      });
+    } else {
+      document.execCommand('copy'); done();
+    }
+  });
+
+  exportResetAll.addEventListener('click', function () {
+    if (!confirm('Alle gespeicherten Änderungen wirklich löschen?')) return;
+    overrides = {};
+    try { localStorage.removeItem(STORAGE_KEY); } catch (ex) {}
+    window.location.reload();
+  });
+
+};
+</script>
+</body>
+</html>
